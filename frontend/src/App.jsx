@@ -1,4 +1,4 @@
-﻿import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import {
   Activity, BarChart3, CandlestickChart, Clock,
   Database, LayoutDashboard, Menu, Moon, Settings,
@@ -7,6 +7,7 @@ import {
 
 import {
   getIndices,
+  getMarketHistory,
   getMultiTimeframeAnalysis,
 } from './api/client'
 
@@ -81,6 +82,11 @@ function App() {
   const [loadingIndices, setLoadingIndices] = useState(true)
   const [loadingAnalysis, setLoadingAnalysis] = useState(false)
   const [apiError, setApiError] = useState('')
+  const [indiaVixData, setIndiaVixData] = useState({
+    loading: false,
+    records: [],
+    error: '',
+  })
 
   const marketIndices = useMemo(
     () => indices.filter((item) => item.category === 'market_index'),
@@ -179,6 +185,56 @@ function App() {
       cancelled = true
     }
   }, [marketIndices])
+
+
+    useEffect(() => {
+    const indiaVix = volatilityIndices.find(
+      (item) => item.code === 'INDIA_VIX',
+    )
+
+    if (!indiaVix) return
+
+    let cancelled = false
+
+    async function loadIndiaVix() {
+      setIndiaVixData({
+        loading: true,
+        records: [],
+        error: '',
+      })
+
+      try {
+        const result = await getMarketHistory('INDIA_VIX', {
+          timeframe: '1D',
+          importBatchId: 5,
+          limit: 2,
+          sortOrder: 'desc',
+        })
+
+        if (cancelled) return
+
+        setIndiaVixData({
+          loading: false,
+          records: result.records || [],
+          error: '',
+        })
+      } catch (error) {
+        if (!cancelled) {
+          setIndiaVixData({
+            loading: false,
+            records: [],
+            error: error.message || 'Unable to load India VIX data.',
+          })
+        }
+      }
+    }
+
+    loadIndiaVix()
+
+    return () => {
+      cancelled = true
+    }
+  }, [volatilityIndices])
 
   const phaseCounts = useMemo(() => {
     const counts = Object.fromEntries(
@@ -435,29 +491,405 @@ function App() {
                 })}
               </div>
 
+
+
               {volatilityIndices.length > 0 && (
-                <>
-                  <h3 className="mb-3 font-semibold">Volatility Indices</h3>
-                  <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                    {volatilityIndices.map((item) => (
-                      <div
-                        key={item.code}
-                        className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-[#111827]"
-                      >
-                        <p className="text-sm font-medium text-slate-500">
-                          {item.name}
-                        </p>
-                        <p className="mt-4 text-lg font-semibold">
-                          Volatility Index
-                        </p>
-                        <p className="mt-1 text-xs text-slate-400">
-                          Separate from Multi-Timeframe Analysis V1
-                        </p>
-                      </div>
-                    ))}
+                <section className="mb-6">
+                  <div className="mb-3 flex items-center justify-between">
+                    <h3 className="font-semibold">Market Volatility</h3>
                   </div>
-                </>
+
+                  <div className="space-y-3">
+                    {volatilityIndices.map((item) => {
+                      const records =
+                        item.code === 'INDIA_VIX' ? indiaVixData.records : []
+
+                      const latest = records[0]
+                      const previous = records[1]
+
+                      const latestClose =
+                        latest?.close != null ? Number(latest.close) : null
+
+                      const previousClose =
+                        previous?.close != null ? Number(previous.close) : null
+
+                      const change =
+                        latestClose !== null && previousClose !== null
+                          ? latestClose - previousClose
+                          : null
+
+                      const changePercent =
+                        change !== null && previousClose !== 0
+                          ? (change / previousClose) * 100
+                          : null
+
+                      const changeColor =
+                        change === null
+                          ? 'text-slate-500'
+                          : change > 0
+                            ? 'text-red-600 dark:text-red-400'
+                            : change < 0
+                              ? 'text-green-600 dark:text-green-400'
+                              : 'text-slate-500'
+
+                      const vixRisk =
+                        latestClose === null
+                          ? { label: 'Unavailable', color: 'text-slate-500' }
+                          : latestClose < 12
+                            ? { label: 'Low Risk', color: 'text-green-600 dark:text-green-400' }
+                            : latestClose < 15
+                              ? { label: 'Neutral Risk', color: 'text-green-600 dark:text-green-400' }
+                              : latestClose < 20
+                                ? { label: 'Choppy', color: 'text-yellow-600 dark:text-yellow-400' }
+                                : latestClose < 25
+                                  ? { label: 'High Risk', color: 'text-orange-600 dark:text-orange-400' }
+                                  : { label: 'Extreme Risk', color: 'text-red-600 dark:text-red-400' }
+
+                      const gaugeValue =
+                        latestClose === null
+                          ? 0
+                          : Math.min(Math.max(latestClose, 0), 40)
+
+                      const gaugeAngle = Math.PI - (gaugeValue / 40) * Math.PI
+
+                      const needleX = 160 + 92 * Math.cos(gaugeAngle)
+                      const needleY = 130 - 92 * Math.sin(gaugeAngle)
+
+                      const structureState = String(
+                        timeframeData?.['1D']?.structure?.market_structure_state || '',
+                      ).toLowerCase()
+
+                      const cycleState = String(
+                        timeframeData?.['1D']?.cycle?.cycle_classification || '',
+                      ).toLowerCase()
+
+                      const marketCondition =
+                        (structureState.includes('bullish') ||
+                          structureState.includes('uptrend')) &&
+                        cycleState.includes('markup')
+                          ? {
+                              label: 'Risk-On',
+                              color: 'text-green-600 dark:text-green-400',
+                              badge: 'bg-green-100 text-green-700 dark:bg-green-900/60 dark:text-green-300',
+                            }
+                          : (structureState.includes('bearish') ||
+                              structureState.includes('downtrend')) &&
+                            cycleState.includes('markdown')
+                            ? {
+                                label: 'Risk-Off',
+                                color: 'text-red-600 dark:text-red-400',
+                                badge: 'bg-red-100 text-red-700 dark:bg-red-900/60 dark:text-red-300',
+                              }
+                            : {
+                                label: 'Transition / Unconfirmed',
+                                color: 'text-yellow-600 dark:text-yellow-400',
+                                badge: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/60 dark:text-yellow-300',
+                              }
+
+                      return (
+                        <div
+                          key={item.code}
+                          className="rounded-xl border border-slate-200 bg-white p-4 transition hover:border-blue-400 dark:border-slate-800 dark:bg-[#111827] sm:p-5"
+                        >
+                          {item.code === 'INDIA_VIX' && indiaVixData.loading ? (
+                            <p className="text-sm text-slate-500">
+                              Loading India VIX data...
+                            </p>
+                          ) : item.code === 'INDIA_VIX' && indiaVixData.error ? (
+                            <p className="break-words text-sm text-red-500">
+                              {indiaVixData.error}
+                            </p>
+                          ) : latest ? (
+                            <>
+                              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                                {/* Instrument identity */}
+                                <div className="flex min-w-0 items-center gap-3 sm:flex-1">
+                                  <div className="min-w-0">
+                                    <p className="text-sm font-semibold">
+                                      {item.name}
+                                    </p>
+                                    <p className="mt-1 text-xs text-slate-400">
+                                      Market-wide volatility reference
+                                    </p>
+                                  </div>
+
+                                  <span className="shrink-0 rounded-full bg-slate-100 px-2 py-1 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                                    NSE
+                                  </span>
+                                </div>
+
+                                {/* Latest VIX value */}
+                                <div className="sm:flex-1">
+                                  <p className="text-xs text-slate-400">
+                                    Latest daily close
+                                  </p>
+                                  <p className="mt-1 text-2xl font-semibold tabular-nums">
+                                    {formatPrice(latestClose)}
+                                  </p>
+                                </div>
+
+                                {/* Daily change */}
+                                <div className="sm:flex-1 sm:text-right">
+                                  <p className="text-xs text-slate-400">
+                                    Daily change
+                                  </p>
+                                  <p className={`mt-1 text-lg font-semibold tabular-nums ${changeColor}`}>
+                                    {change !== null
+                                      ? `${change > 0 ? '+' : ''}${formatPrice(change)}`
+                                      : '—'}
+                                  </p>
+                                  <p className={`text-xs font-medium ${changeColor}`}>
+                                    {changePercent !== null
+                                      ? `${changePercent > 0 ? '+' : ''}${changePercent.toFixed(2)}%`
+                                      : 'Change unavailable'}
+                                  </p>
+                                </div>
+                              </div>
+
+                              {/* India VIX graphical gauge */}
+                              <div className="mt-6 grid gap-6 border-t border-slate-100 pt-5 dark:border-slate-800 lg:grid-cols-2">
+
+                                {/* Semicircular speedometer */}
+                                <div className="min-w-0">
+                                  <p className="text-sm font-semibold">
+                                    Volatility Risk
+                                  </p>
+
+                                  <div className="mx-auto mt-3 w-full max-w-sm">
+                                    <svg
+                                      viewBox="0 0 320 175"
+                                      className="h-auto w-full overflow-visible text-slate-900 dark:text-slate-100"
+                                      role="img"
+                                      aria-label={`India VIX ${formatPrice(latestClose)}, ${vixRisk.label}`}
+                                    >
+                                      {/* Low */}
+                                      <path
+                                        d="M 40 130 A 120 120 0 0 1 89.5 32.9"
+                                        fill="none"
+                                        stroke="#16A36A"
+                                        strokeWidth="17"
+                                      />
+
+                                      {/* Neutral */}
+                                      <path
+                                        d="M 89.5 32.9 A 120 120 0 0 1 114.1 19.1"
+                                        fill="none"
+                                        stroke="#84A83D"
+                                        strokeWidth="17"
+                                      />
+
+                                      {/* Choppy */}
+                                      <path
+                                        d="M 114.1 19.1 A 120 120 0 0 1 205.9 19.1"
+                                        fill="none"
+                                        stroke="#E5A12B"
+                                        strokeWidth="17"
+                                      />
+
+                                      {/* High and Extreme */}
+                                      <path
+                                        d="M 205.9 19.1 A 120 120 0 0 1 280 130"
+                                        fill="none"
+                                        stroke="#D94B4B"
+                                        strokeWidth="17"
+                                      />
+
+                                      {/* Needle */}
+                                      {latestClose !== null && (
+                                        <>
+                                          <line
+                                            x1="160"
+                                            y1="130"
+                                            x2={needleX}
+                                            y2={needleY}
+                                            stroke="currentColor"
+                                            strokeWidth="3.5"
+                                            strokeLinecap="round"
+                                          />
+
+                                          <circle
+                                            cx="160"
+                                            cy="130"
+                                            r="7"
+                                            fill="currentColor"
+                                          />
+                                        </>
+                                      )}
+
+                                      {/* Current value */}
+                                      <text
+                                        x="160"
+                                        y="105"
+                                        textAnchor="middle"
+                                        fill="currentColor"
+                                        fontSize="27"
+                                        fontWeight="700"
+                                      >
+                                        {formatPrice(latestClose)}
+                                      </text>
+
+                                      <text
+                                        x="160"
+                                        y="121"
+                                        textAnchor="middle"
+                                        fill="currentColor"
+                                        fontSize="10"
+                                      >
+                                        INDIA VIX
+                                      </text>
+
+                                      <text
+                                        x="31"
+                                        y="153"
+                                        fill="currentColor"
+                                        fontSize="11"
+                                      >
+                                        0
+                                      </text>
+
+                                      <text
+                                        x="289"
+                                        y="153"
+                                        textAnchor="end"
+                                        fill="currentColor"
+                                        fontSize="11"
+                                      >
+                                        40+
+                                      </text>
+                                    </svg>
+                                  </div>
+
+                                  <div className="mt-1 text-center">
+                                    <span
+                                      className={`text-base font-bold ${vixRisk.color}`}
+                                    >
+                                      {vixRisk.label}
+                                    </span>
+                                  </div>
+
+                                  <div className="mt-4 grid grid-cols-5 gap-1 text-center">
+                                    {[
+                                      { label: 'Low', color: 'bg-green-500' },
+                                      { label: 'Neutral', color: 'bg-lime-500' },
+                                      { label: 'Choppy', color: 'bg-yellow-500' },
+                                      { label: 'High', color: 'bg-orange-500' },
+                                      { label: 'Extreme', color: 'bg-red-500' },
+                                    ].map((zone) => (
+                                      <div key={zone.label} className="min-w-0">
+                                        <div
+                                          className={`mx-auto mb-1 h-2 w-2 rounded-full ${zone.color}`}
+                                        />
+                                        <span className="text-[10px] text-slate-500">
+                                          {zone.label}
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+
+                                {/* Separate market condition */}
+                                <div className="flex flex-col justify-center rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-[#111827]">
+                                  <p className="text-sm font-semibold">
+                                    Market Condition
+                                  </p>
+
+                                  <p className="mt-1 text-xs text-slate-500">
+                                    Based on daily market structure and cycle classification
+                                  </p>
+
+                                  <div className="mt-4">
+                                    <span
+                                      className={`inline-flex rounded-lg px-3 py-2 text-sm font-semibold ${marketCondition.color} ${marketCondition.badge}`}
+                                    >
+                                      {marketCondition.label}
+                                    </span>
+                                  </div>
+
+                                  <div className="mt-4 space-y-2 text-xs text-slate-500">
+                                    <p>
+                                      Structure:{' '}
+                                      <span className="font-medium text-slate-700 dark:text-slate-300">
+                                        {formatLabel(
+                                          timeframeData?.['1D']?.structure?.market_structure_state,
+                                        )}
+                                      </span>
+                                    </p>
+
+                                    <p>
+                                      Cycle:{' '}
+                                      <span className="font-medium text-slate-700 dark:text-slate-300">
+                                        {formatLabel(
+                                          timeframeData?.['1D']?.cycle?.cycle_classification,
+                                        )}
+                                      </span>
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Expandable details */}
+                              <details className="mt-4 border-t border-slate-100 pt-3 dark:border-slate-800">
+                                <summary className="cursor-pointer text-xs font-medium text-slate-500 transition hover:text-blue-500">
+                                  View additional details
+                                </summary>
+
+                                <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                                  <div>
+                                    <p className="text-xs text-slate-400">
+                                      Previous close
+                                    </p>
+                                    <p className="mt-1 text-sm font-medium tabular-nums">
+                                      {previousClose !== null
+                                        ? formatPrice(previousClose)
+                                        : '—'}
+                                    </p>
+                                  </div>
+
+                                  <div>
+                                    <p className="text-xs text-slate-400">
+                                      Latest data date
+                                    </p>
+                                    <p className="mt-1 text-sm font-medium">
+                                      {latest.candle_date
+                                        ? formatDate(latest.candle_date)
+                                        : '—'}
+                                    </p>
+                                  </div>
+
+                                  <div>
+                                    <p className="text-xs text-slate-400">
+                                      Data quality
+                                    </p>
+                                    <p className="mt-1 text-sm font-medium">
+                                      {latest.quality_status === 'accepted'
+                                        ? 'Accepted'
+                                        : latest.quality_status || 'Unavailable'}
+                                    </p>
+                                  </div>
+                                </div>
+                              </details>
+                            </>
+                          ) : (
+                            <div className="flex items-center justify-between gap-3">
+                              <div>
+                                <p className="text-sm font-semibold">{item.name}</p>
+                                <p className="mt-1 text-xs text-slate-400">
+                                  Volatility reference
+                                </p>
+                              </div>
+                              <span className="text-sm text-slate-500">
+                                No data available
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </section>
               )}
+
+
 
               <div className="grid gap-6 xl:grid-cols-3">
                 <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-[#111827] xl:col-span-2">
