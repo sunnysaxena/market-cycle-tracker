@@ -3,23 +3,21 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from sqlalchemy import select
 
-from app.api.v1.indices import router as indices_router
-from app.core.database import SessionLocal
-from app.models.index import Index
-from app.api.v1.providers import router as providers_router
-from app.api.v1.cycles import cycles_router
-from app.api.v1.candlesticks import router as candlesticks_router
-
-
 from app.api.exception_handlers import (
     api_service_exception_handler,
 )
-from app.services.api_errors import APIServiceError
+from app.api.v1.indices import router as indices_router
+from app.api.v1.providers import router as providers_router
+from app.api.v1.cycles import cycles_router
+from app.api.v1.candlesticks import router as candlesticks_router
 from app.api.v1.market import router as market_router
 from app.api.v1.indicators import router as indicators_router
 from app.api.v1.structure import router as structure_router
 from app.api.v1.multi_timeframe import router as multi_timeframe_router
-
+from app.api.v1.batches import router as batches_router
+from app.core.database import SessionLocal
+from app.models.index import Index
+from app.services.api_errors import APIServiceError
 
 DEFAULT_INDICES = [
     {
@@ -135,6 +133,11 @@ app.include_router(
 
 app.include_router(
     structure_router, 
+    prefix="/api/v1",
+)
+
+app.include_router(
+    batches_router,
     prefix="/api/v1",
 )
 
