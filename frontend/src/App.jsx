@@ -394,7 +394,10 @@ function App() {
               <div className="mb-6">
                 <h2 className="text-2xl font-bold">Market Overview</h2>
                 <p className="mt-1 text-sm text-slate-500">
-                  Daily, weekly, monthly and yearly market-cycle monitoring
+                    Track every phase of the Indian market cycle — Accumulation, Markup,
+                    Distribution, Markdown, Sideways Consolidation and Transition.
+                    Analyze market structure, technical indicators and volatility
+                    across daily, weekly, monthly and yearly timeframes.
                 </p>
               </div>
 
