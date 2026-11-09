@@ -1,0 +1,16 @@
+CURATED DAILY DATA SUMMARY
+=======================================================
+Import batch: 1
+Raw records: 19875
+Close records: 19821
+Full OHLC records: 19700
+
+BANKNIFTY: Close=3462, OHLC=3461
+FINNIFTY: Close=3313, OHLC=3199
+INDIA_VIX: Close=3765, OHLC=3759
+MIDCPNIFTY: Close=649, OHLC=649
+NIFTY50: Close=3728, OHLC=3728
+SENSEX: Close=4904, OHLC=4904
+
+SQLite integrity: ok
+Foreign-key errors: 0

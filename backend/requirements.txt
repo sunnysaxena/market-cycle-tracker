@@ -1,0 +1,17 @@
+
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+pandas
+numpy
+TA-Lib
+sqlalchemy
+alembic
+psycopg[binary]
+httpx
+python-dotenv
+APScheduler>=3.10,<4
+pytest
+pytest-cov
+ruff

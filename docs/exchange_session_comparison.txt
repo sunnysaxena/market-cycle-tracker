@@ -1,0 +1,77 @@
+CROSS-INDEX TRADING SESSION COMPARISON
+======================================================================
+Import batch: 1
+
+Note: Results are unverified candidates, not confirmed gaps.
+
+
+EXCHANGE: NSE
+----------------------------------------------------------------------
+
+Instrument: NIFTY50
+First date: 2010-01-04
+Last date: 2025-03-03
+Observed unique dates: 3,728
+Same-exchange peers: 4
+Peer-supported candidate gaps: 88
+Weekend-dated records: 5
+Weekend dates also present in peers: 5
+
+Instrument: BANKNIFTY
+First date: 2010-01-04
+Last date: 2025-03-03
+Observed unique dates: 3,462
+Same-exchange peers: 4
+Peer-supported candidate gaps: 354
+Weekend-dated records: 7
+Weekend dates also present in peers: 7
+
+Instrument: FINNIFTY
+First date: 2011-09-07
+Last date: 2025-03-03
+Observed unique dates: 3,313
+Same-exchange peers: 4
+Peer-supported candidate gaps: 82
+Weekend-dated records: 5
+Weekend dates also present in peers: 5
+
+Instrument: MIDCPNIFTY
+First date: 2022-07-18
+Last date: 2025-03-03
+Observed unique dates: 649
+Same-exchange peers: 4
+Peer-supported candidate gaps: 4
+Weekend-dated records: 5
+Weekend dates also present in peers: 5
+
+Instrument: INDIA_VIX
+First date: 2010-01-04
+Last date: 2025-03-03
+Observed unique dates: 3,815
+Same-exchange peers: 4
+Peer-supported candidate gaps: 1
+Weekend-dated records: 68
+Weekend dates also present in peers: 7
+
+EXCHANGE: BSE
+----------------------------------------------------------------------
+
+Instrument: SENSEX
+First date: 2005-01-03
+Last date: 2025-03-03
+Observed unique dates: 4,904
+Same-exchange peers: 0
+Peer-supported candidate gaps: 0
+Weekend-dated records: 23
+Peer comparison unavailable; official exchange calendar required.
+Weekend dates also present in peers: 0
+
+======================================================================
+Total peer-supported candidate gaps: 529
+Total weekend-dated records: 113
+
+No missing records were deleted or modified.
+No candidate gap has been declared an actual missing session.
+
+Gap report: E:\market-cycle-tracker\docs\peer_supported_gaps.csv
+Weekend report: E:\market-cycle-tracker\docs\weekend_sessions.csv

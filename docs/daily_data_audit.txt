@@ -1,0 +1,110 @@
+MARKET CYCLE TRACKER - DAILY HISTORICAL AUDIT
+=================================================================
+Source: Dump20260308.sql
+Reference date: 2026-10-31
+
+-----------------------------------------------------------------
+TABLE: finnifty_1d
+Total rows: 3,313
+Valid Daily candles: 3,313
+First date: 2011-09-07
+Last date: 2025-03-03
+Duplicate IDs: 0
+Duplicate timestamps: 0
+Invalid timestamps: 0
+Invalid OHLC: 0
+Invalid volume: 0
+Zero volume: 3,313
+Missing volume: 0
+Flat candles: 114
+Weekly candles generated: 705
+Monthly candles generated: 163
+Yearly candles generated: 15
+-----------------------------------------------------------------
+TABLE: indiavix_1d
+Total rows: 3,819
+Valid Daily candles: 3,812
+First date: 2010-01-04
+Last date: 2025-03-03
+Duplicate IDs: 0
+Duplicate timestamps: 4
+Invalid timestamps: 0
+Invalid OHLC: 3
+Invalid volume: 0
+Zero volume: 3,812
+Missing volume: 0
+Flat candles: 0
+Weekly candles generated: 792
+Monthly candles generated: 183
+Yearly candles generated: 16
+-----------------------------------------------------------------
+TABLE: midnifty_1d
+Total rows: 649
+Valid Daily candles: 649
+First date: 2022-07-18
+Last date: 2025-03-03
+Duplicate IDs: 0
+Duplicate timestamps: 0
+Invalid timestamps: 0
+Invalid OHLC: 0
+Invalid volume: 0
+Zero volume: 649
+Missing volume: 0
+Flat candles: 0
+Weekly candles generated: 138
+Monthly candles generated: 33
+Yearly candles generated: 4
+-----------------------------------------------------------------
+TABLE: nifty50_1d
+Total rows: 3,728
+Valid Daily candles: 3,728
+First date: 2010-01-04
+Last date: 2025-03-03
+Duplicate IDs: 0
+Duplicate timestamps: 0
+Invalid timestamps: 0
+Invalid OHLC: 0
+Invalid volume: 0
+Zero volume: 3,728
+Missing volume: 0
+Flat candles: 0
+Weekly candles generated: 792
+Monthly candles generated: 183
+Yearly candles generated: 16
+-----------------------------------------------------------------
+TABLE: niftybank_1d
+Total rows: 3,462
+Valid Daily candles: 3,462
+First date: 2010-01-04
+Last date: 2025-03-03
+Duplicate IDs: 0
+Duplicate timestamps: 0
+Invalid timestamps: 0
+Invalid OHLC: 0
+Invalid volume: 0
+Zero volume: 3,462
+Missing volume: 0
+Flat candles: 1
+Weekly candles generated: 746
+Monthly candles generated: 179
+Yearly candles generated: 16
+-----------------------------------------------------------------
+TABLE: sensex_1d
+Total rows: 4,904
+Valid Daily candles: 4,904
+First date: 2005-01-03
+Last date: 2025-03-03
+Duplicate IDs: 0
+Duplicate timestamps: 0
+Invalid timestamps: 0
+Invalid OHLC: 0
+Invalid volume: 0
+Zero volume: 4,904
+Missing volume: 0
+Flat candles: 0
+Weekly candles generated: 1,053
+Monthly candles generated: 243
+Yearly candles generated: 21
+
+Incomplete final SQL statement: False
+Original SQL dump was not modified.

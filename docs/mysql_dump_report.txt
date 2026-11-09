@@ -1,0 +1,147 @@
+MYSQL DATABASE SCHEMA REPORT
+============================================================
+Total CREATE TABLE statements: 12
+
+1. TABLE: finnifty_1d
+   Engine: InnoDB
+   Columns:
+      - id: int
+      - timestamp: datetime
+      - open: double
+      - high: double
+      - low: double
+      - close: double
+      - volume: bigint
+   Primary Key: id
+
+2. TABLE: finnifty_1m
+   Engine: InnoDB
+   Columns:
+      - id: int
+      - timestamp: datetime
+      - open: double
+      - high: double
+      - low: double
+      - close: double
+      - volume: bigint
+   Primary Key: id
+
+3. TABLE: indiavix_1d
+   Engine: InnoDB
+   Columns:
+      - id: int
+      - timestamp: datetime
+      - open: double
+      - high: double
+      - low: double
+      - close: double
+      - volume: bigint
+   Primary Key: id
+
+4. TABLE: indiavix_1m
+   Engine: InnoDB
+   Columns:
+      - id: int
+      - timestamp: datetime
+      - open: double
+      - high: double
+      - low: double
+      - close: double
+      - volume: bigint
+   Primary Key: id
+
+5. TABLE: midnifty_1d
+   Engine: InnoDB
+   Columns:
+      - id: int
+      - timestamp: datetime
+      - open: double
+      - high: double
+      - low: double
+      - close: double
+      - volume: bigint
+   Primary Key: id
+
+6. TABLE: midnifty_1m
+   Engine: InnoDB
+   Columns:
+      - id: int
+      - timestamp: datetime
+      - open: double
+      - high: double
+      - low: double
+      - close: double
+      - volume: bigint
+   Primary Key: id
+
+7. TABLE: nifty50_1d
+   Engine: InnoDB
+   Columns:
+      - id: int
+      - timestamp: datetime
+      - open: double
+      - high: double
+      - low: double
+      - close: double
+      - volume: bigint
+   Primary Key: id
+
+8. TABLE: nifty50_1m
+   Engine: InnoDB
+   Columns:
+      - id: int
+      - timestamp: datetime
+      - open: double
+      - high: double
+      - low: double
+      - close: double
+      - volume: bigint
+   Primary Key: id
+
+9. TABLE: niftybank_1d
+   Engine: InnoDB
+   Columns:
+      - id: int
+      - timestamp: datetime
+      - open: double
+      - high: double
+      - low: double
+      - close: double
+      - volume: bigint
+   Primary Key: id
+
+10. TABLE: niftybank_1m
+   Engine: InnoDB
+   Columns:
+      - id: int
+      - timestamp: datetime
+      - open: double
+      - high: double
+      - low: double
+      - close: double
+      - volume: bigint
+   Primary Key: id
+
+11. TABLE: sensex_1d
+   Engine: InnoDB
+   Columns:
+      - id: int
+      - timestamp: datetime
+      - open: double
+      - high: double
+      - low: double
+      - close: double
+      - volume: bigint
+   Primary Key: id
+
+12. TABLE: sensex_1m
+   Engine: InnoDB
+   Columns:
+      - id: int
+      - timestamp: datetime
+      - open: double
+      - high: double
+      - low: double
+      - close: double
+      - volume: bigint
+   Primary Key: id

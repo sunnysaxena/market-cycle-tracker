@@ -1,0 +1,121 @@
+MARKET CYCLE TRACKER - HISTORICAL DATA AUDIT
+=================================================================
+Source file: Dump20260308.sql
+Source size: 214.41 MB
+INSERT statements processed: 227
+
+-----------------------------------------------------------------
+TABLE: finnifty_1d
+Total records: 3,313
+ID range: 1 to 3313
+First timestamp: 2011-09-07 00:00:00
+Last timestamp: 2025-03-03 00:00:00
+Distinct dates: 3,313
+Duplicate IDs: 0
+Duplicate timestamps: 0
+Out-of-order records: 0
+Invalid timestamps: 0
+Malformed records: 0
+Rows containing NULL: 0
+Invalid OHLC records: 0
+Flat candles: 114
+Zero volume records: 3,313
+Negative volume records: 0
+Invalid volume records: 0
+-----------------------------------------------------------------
+TABLE: indiavix_1d
+Total records: 3,819
+ID range: 1 to 3820
+First timestamp: 2010-01-04 00:00:00
+Last timestamp: 2025-03-03 00:00:00
+Distinct dates: 3,815
+Duplicate IDs: 0
+Duplicate timestamps: 4
+Out-of-order records: 0
+Invalid timestamps: 0
+Malformed records: 0
+Rows containing NULL: 0
+Invalid OHLC records: 3
+Flat candles: 0
+Zero volume records: 3,819
+Negative volume records: 0
+Invalid volume records: 0
+-----------------------------------------------------------------
+TABLE: midnifty_1d
+Total records: 649
+ID range: 658 to 1306
+First timestamp: 2022-07-18 00:00:00
+Last timestamp: 2025-03-03 00:00:00
+Distinct dates: 649
+Duplicate IDs: 0
+Duplicate timestamps: 0
+Out-of-order records: 0
+Invalid timestamps: 0
+Malformed records: 0
+Rows containing NULL: 0
+Invalid OHLC records: 0
+Flat candles: 0
+Zero volume records: 649
+Negative volume records: 0
+Invalid volume records: 0
+-----------------------------------------------------------------
+TABLE: nifty50_1d
+Total records: 3,728
+ID range: 1 to 3729
+First timestamp: 2010-01-04 00:00:00
+Last timestamp: 2025-03-03 00:00:00
+Distinct dates: 3,728
+Duplicate IDs: 0
+Duplicate timestamps: 0
+Out-of-order records: 0
+Invalid timestamps: 0
+Malformed records: 0
+Rows containing NULL: 0
+Invalid OHLC records: 0
+Flat candles: 0
+Zero volume records: 3,728
+Negative volume records: 0
+Invalid volume records: 0
+-----------------------------------------------------------------
+TABLE: niftybank_1d
+Total records: 3,462
+ID range: 1 to 3463
+First timestamp: 2010-01-04 00:00:00
+Last timestamp: 2025-03-03 00:00:00
+Distinct dates: 3,462
+Duplicate IDs: 0
+Duplicate timestamps: 0
+Out-of-order records: 0
+Invalid timestamps: 0
+Malformed records: 0
+Rows containing NULL: 0
+Invalid OHLC records: 0
+Flat candles: 1
+Zero volume records: 3,462
+Negative volume records: 0
+Invalid volume records: 0
+-----------------------------------------------------------------
+TABLE: sensex_1d
+Total records: 4,904
+ID range: 1 to 4904
+First timestamp: 2005-01-03 00:00:00
+Last timestamp: 2025-03-03 00:00:00
+Distinct dates: 4,904
+Duplicate IDs: 0
+Duplicate timestamps: 0
+Out-of-order records: 0
+Invalid timestamps: 0
+Malformed records: 0
+Rows containing NULL: 0
+Invalid OHLC records: 0
+Flat candles: 0
+Zero volume records: 4,904
+Negative volume records: 0
+Invalid volume records: 0
+
+=================================================================
+TABLES FOUND IN DUMP
+finnifty_1d, finnifty_1m, indiavix_1d, indiavix_1m, midnifty_1d, midnifty_1m, nifty50_1d, nifty50_1m, niftybank_1d, niftybank_1m, sensex_1d, sensex_1m
+
+Incomplete final INSERT statement: False
+Original SQL dump was only read; it was not modified.

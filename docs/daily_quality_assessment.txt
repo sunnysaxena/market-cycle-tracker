@@ -1,0 +1,200 @@
+HISTORICAL DAILY QUALITY ASSESSMENT
+======================================================================
+Database: historical_staging.db
+Import batch: 1
+Raw records: 19,875
+
+INSTRUMENT SUMMARY
+----------------------------------------------------------------------
+
+FINNIFTY
+  Raw records: 3,313
+  Accepted: 3,199
+  Review required: 114
+  Quarantined: 0
+  Close eligible: 3,313
+  Full OHLC eligible: 3,199
+  Volume eligible: 0
+
+INDIA_VIX
+  Raw records: 3,819
+  Accepted: 3,809
+  Review required: 6
+  Quarantined: 4
+  Close eligible: 3,815
+  Full OHLC eligible: 3,809
+  Volume eligible: 0
+
+MIDCPNIFTY
+  Raw records: 649
+  Accepted: 649
+  Review required: 0
+  Quarantined: 0
+  Close eligible: 649
+  Full OHLC eligible: 649
+  Volume eligible: 0
+
+NIFTY50
+  Raw records: 3,728
+  Accepted: 3,728
+  Review required: 0
+  Quarantined: 0
+  Close eligible: 3,728
+  Full OHLC eligible: 3,728
+  Volume eligible: 0
+
+BANKNIFTY
+  Raw records: 3,462
+  Accepted: 3,461
+  Review required: 1
+  Quarantined: 0
+  Close eligible: 3,462
+  Full OHLC eligible: 3,461
+  Volume eligible: 0
+
+SENSEX
+  Raw records: 4,904
+  Accepted: 4,904
+  Review required: 0
+  Quarantined: 0
+  Close eligible: 4,904
+  Full OHLC eligible: 4,904
+  Volume eligible: 0
+
+DUPLICATE ANALYSIS
+----------------------------------------------------------------------
+Duplicate timestamp groups: 4
+Exact duplicate groups: 1
+Conflicting duplicate groups: 3
+
+FLAGGED RECORDS
+----------------------------------------------------------------------
+ID 12938 | BANKNIFTY | 2016-11-10 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 1 | FINNIFTY | 2011-09-07 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 2 | FINNIFTY | 2011-09-08 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 3 | FINNIFTY | 2011-09-09 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 4 | FINNIFTY | 2011-09-12 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 5 | FINNIFTY | 2011-09-13 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 6 | FINNIFTY | 2011-09-14 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 7 | FINNIFTY | 2011-09-15 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 8 | FINNIFTY | 2011-09-16 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 9 | FINNIFTY | 2011-09-19 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 10 | FINNIFTY | 2011-09-20 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 11 | FINNIFTY | 2011-09-21 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 12 | FINNIFTY | 2011-09-22 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 13 | FINNIFTY | 2011-09-23 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 14 | FINNIFTY | 2011-09-26 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 15 | FINNIFTY | 2011-09-27 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 16 | FINNIFTY | 2011-09-28 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 17 | FINNIFTY | 2011-09-29 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 18 | FINNIFTY | 2011-09-30 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 19 | FINNIFTY | 2011-10-03 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 20 | FINNIFTY | 2011-10-04 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 21 | FINNIFTY | 2011-10-05 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 22 | FINNIFTY | 2011-10-07 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 23 | FINNIFTY | 2011-10-10 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 24 | FINNIFTY | 2011-10-11 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 25 | FINNIFTY | 2011-10-12 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 26 | FINNIFTY | 2011-10-13 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 27 | FINNIFTY | 2011-10-14 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 28 | FINNIFTY | 2011-10-17 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 29 | FINNIFTY | 2011-10-18 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 30 | FINNIFTY | 2011-10-19 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 31 | FINNIFTY | 2011-10-20 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 32 | FINNIFTY | 2011-10-21 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 33 | FINNIFTY | 2011-10-24 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 34 | FINNIFTY | 2011-10-25 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 35 | FINNIFTY | 2011-10-28 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 36 | FINNIFTY | 2011-10-31 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 37 | FINNIFTY | 2011-11-01 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 38 | FINNIFTY | 2011-11-02 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 39 | FINNIFTY | 2011-11-03 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 40 | FINNIFTY | 2011-11-04 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 41 | FINNIFTY | 2011-11-08 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 42 | FINNIFTY | 2011-11-09 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 43 | FINNIFTY | 2011-11-11 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 44 | FINNIFTY | 2011-11-14 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 45 | FINNIFTY | 2011-11-15 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 46 | FINNIFTY | 2011-11-16 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 47 | FINNIFTY | 2011-11-17 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 48 | FINNIFTY | 2011-11-18 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 49 | FINNIFTY | 2011-11-21 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 50 | FINNIFTY | 2011-11-22 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 51 | FINNIFTY | 2011-11-23 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 52 | FINNIFTY | 2011-11-24 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 53 | FINNIFTY | 2011-11-25 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 54 | FINNIFTY | 2011-11-28 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 55 | FINNIFTY | 2011-11-29 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 56 | FINNIFTY | 2011-11-30 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 57 | FINNIFTY | 2011-12-01 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 58 | FINNIFTY | 2011-12-02 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 59 | FINNIFTY | 2011-12-05 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 60 | FINNIFTY | 2011-12-07 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 61 | FINNIFTY | 2011-12-08 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 62 | FINNIFTY | 2011-12-09 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 63 | FINNIFTY | 2011-12-12 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 64 | FINNIFTY | 2011-12-13 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 65 | FINNIFTY | 2011-12-14 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 66 | FINNIFTY | 2011-12-15 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 67 | FINNIFTY | 2011-12-16 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 68 | FINNIFTY | 2011-12-19 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 69 | FINNIFTY | 2011-12-20 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 70 | FINNIFTY | 2011-12-21 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 71 | FINNIFTY | 2011-12-22 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 72 | FINNIFTY | 2011-12-23 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 73 | FINNIFTY | 2011-12-26 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 74 | FINNIFTY | 2011-12-27 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 75 | FINNIFTY | 2011-12-28 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 76 | FINNIFTY | 2011-12-29 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 77 | FINNIFTY | 2011-12-30 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 78 | FINNIFTY | 2012-01-02 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 79 | FINNIFTY | 2012-01-03 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 80 | FINNIFTY | 2012-01-04 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 81 | FINNIFTY | 2012-01-05 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 82 | FINNIFTY | 2012-01-06 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 83 | FINNIFTY | 2012-01-09 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 84 | FINNIFTY | 2012-01-10 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 85 | FINNIFTY | 2012-01-11 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 86 | FINNIFTY | 2012-01-12 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 87 | FINNIFTY | 2012-01-13 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 88 | FINNIFTY | 2012-01-16 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 89 | FINNIFTY | 2012-01-17 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 90 | FINNIFTY | 2012-01-18 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 91 | FINNIFTY | 2012-01-19 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 92 | FINNIFTY | 2012-01-23 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 93 | FINNIFTY | 2012-01-24 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 94 | FINNIFTY | 2012-01-25 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 95 | FINNIFTY | 2012-01-27 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 96 | FINNIFTY | 2012-01-30 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 97 | FINNIFTY | 2012-01-31 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 98 | FINNIFTY | 2012-02-01 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 99 | FINNIFTY | 2012-02-02 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 100 | FINNIFTY | 2012-02-03 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 101 | FINNIFTY | 2012-02-06 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 102 | FINNIFTY | 2012-02-07 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 103 | FINNIFTY | 2012-02-08 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 104 | FINNIFTY | 2012-02-09 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 105 | FINNIFTY | 2012-02-10 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 106 | FINNIFTY | 2012-02-13 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 107 | FINNIFTY | 2012-02-14 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 108 | FINNIFTY | 2012-02-15 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 109 | FINNIFTY | 2012-02-16 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 110 | FINNIFTY | 2012-02-17 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 111 | FINNIFTY | 2012-02-21 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 112 | FINNIFTY | 2012-02-22 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 113 | FINNIFTY | 2012-02-23 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 114 | FINNIFTY | 2012-02-24 00:00:00 | review_required | close=True | OHLC=False | issues=flat_ohlc
+ID 4225 | INDIA_VIX | 2013-08-22 00:00:00 | quarantined | close=True | OHLC=False | issues=invalid_ohlc
+ID 4805 | INDIA_VIX | 2015-12-31 00:00:00 | accepted | close=True | OHLC=True | issues=exact_duplicate_canonical
+ID 4806 | INDIA_VIX | 2015-12-31 00:00:00 | quarantined | close=False | OHLC=False | issues=exact_duplicate_extra
+ID 6098 | INDIA_VIX | 2021-02-12 00:00:00 | quarantined | close=True | OHLC=False | issues=invalid_ohlc
+ID 6134 | INDIA_VIX | 2021-03-30 00:00:00 | quarantined | close=True | OHLC=False | issues=invalid_ohlc
+ID 6789 | INDIA_VIX | 2023-10-20 00:00:00 | review_required | close=True | OHLC=False | issues=conflicting_duplicate_timestamp,duplicate_close_canonical
+ID 6790 | INDIA_VIX | 2023-10-20 00:00:00 | review_required | close=False | OHLC=False | issues=conflicting_duplicate_timestamp
+ID 6799 | INDIA_VIX | 2023-11-03 00:00:00 | review_required | close=True | OHLC=False | issues=conflicting_duplicate_timestamp,duplicate_close_canonical
+ID 6800 | INDIA_VIX | 2023-11-03 00:00:00 | review_required | close=False | OHLC=False | issues=conflicting_duplicate_timestamp
+ID 6815 | INDIA_VIX | 2023-11-24 00:00:00 | review_required | close=True | OHLC=False | issues=conflicting_duplicate_timestamp,duplicate_close_canonical
+ID 6816 | INDIA_VIX | 2023-11-24 00:00:00 | review_required | close=False | OHLC=False | issues=conflicting_duplicate_timestamp
+
+SQLite integrity: ok
+Raw historical records were not modified.

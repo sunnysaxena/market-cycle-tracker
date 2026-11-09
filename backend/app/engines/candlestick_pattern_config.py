@@ -1,0 +1,134 @@
+
+from dataclasses import dataclass
+from decimal import Decimal
+
+
+CALCULATION_VERSION = "candlestick_patterns_v1.0"
+
+
+@dataclass(frozen=True)
+class CandlestickPatternConfig:
+    """
+    Configurable thresholds for single-candlestick recognition.
+
+    Ratios are expressed between 0 and 1.
+    """
+
+    # Doji
+    doji_max_body_ratio: Decimal = Decimal("0.10")
+    long_legged_doji_min_wick_ratio: Decimal = Decimal("0.30")
+    doji_wick_dominance_ratio: Decimal = Decimal("0.60")
+    dragonfly_max_upper_wick_ratio: Decimal = Decimal("0.05")
+    gravestone_max_lower_wick_ratio: Decimal = Decimal("0.05")
+
+    # Spinning Top
+    spinning_top_max_body_ratio: Decimal = Decimal("0.30")
+    spinning_top_min_wick_ratio: Decimal = Decimal("0.10")
+
+    # Hammer / Hanging Man
+    hammer_max_body_ratio: Decimal = Decimal("0.35")
+    hammer_min_lower_wick_body_ratio: Decimal = Decimal("2.0")
+    hammer_max_upper_wick_range_ratio: Decimal = Decimal("0.10")
+
+    # Inverted Hammer / Shooting Star
+    inverted_hammer_max_body_ratio: Decimal = Decimal("0.35")
+    inverted_hammer_min_upper_wick_body_ratio: Decimal = Decimal("2.0")
+    inverted_hammer_max_lower_wick_range_ratio: Decimal = Decimal("0.10")
+
+    # Marubozu
+    marubozu_min_body_ratio: Decimal = Decimal("0.90")
+    marubozu_max_wick_range_ratio: Decimal = Decimal("0.05")
+
+    # High-Wave Candle
+    high_wave_min_wick_ratio: Decimal = Decimal("0.30")
+
+    # Long-Wick Candles
+    long_wick_min_range_ratio: Decimal = Decimal("0.60")
+
+    # Piercing Line / Dark Cloud Cover
+    reversal_min_body_range_ratio: Decimal = Decimal("0.50")
+    piercing_min_penetration_ratio: Decimal = Decimal("0.50")
+    dark_cloud_min_penetration_ratio: Decimal = Decimal("0.50")
+
+    # Gap tolerance (relative to previous candle range)
+    piercing_gap_tolerance_ratio: Decimal = Decimal("0.05")
+    dark_cloud_gap_tolerance_ratio: Decimal = Decimal("0.05")
+
+    # Tweezer Top / Bottom
+    tweezer_tolerance_ratio: Decimal = Decimal("0.05")
+    
+    # Bullish / Bearish Kicker
+    kicker_min_gap_ratio: Decimal = Decimal("0.10")
+
+    # Bullish / Bearish Meeting Lines
+    meeting_lines_close_tolerance_ratio: Decimal = Decimal("0.05")
+    
+    # Bullish / Bearish Separating Lines
+    separating_lines_open_tolerance_ratio: Decimal = Decimal("0.05")
+
+    # On-Neck / In-Neck / Thrusting
+    continuation_min_body_range_ratio: Decimal = Decimal("0.50")
+    neck_close_tolerance_ratio: Decimal = Decimal("0.05")
+
+
+    def __post_init__(self):
+        ratio_fields = (
+            "doji_max_body_ratio",
+            "long_legged_doji_min_wick_ratio",
+            "doji_wick_dominance_ratio",
+            "dragonfly_max_upper_wick_ratio",
+            "gravestone_max_lower_wick_ratio",
+            "spinning_top_max_body_ratio",
+            "spinning_top_min_wick_ratio",
+            "hammer_max_body_ratio",
+            "hammer_max_upper_wick_range_ratio",
+            "inverted_hammer_max_body_ratio",
+            "inverted_hammer_max_lower_wick_range_ratio",
+            "marubozu_min_body_ratio",
+            "marubozu_max_wick_range_ratio",
+            "high_wave_min_wick_ratio",
+            "long_wick_min_range_ratio",
+            "reversal_min_body_range_ratio",
+            "piercing_min_penetration_ratio",
+            "dark_cloud_min_penetration_ratio",
+            "piercing_gap_tolerance_ratio",
+            "dark_cloud_gap_tolerance_ratio",
+            "tweezer_tolerance_ratio",
+            "kicker_min_gap_ratio",
+            "meeting_lines_close_tolerance_ratio",
+            "separating_lines_open_tolerance_ratio",
+            "continuation_min_body_range_ratio",
+            "neck_close_tolerance_ratio",
+        )
+
+        positive_fields = (
+            "hammer_min_lower_wick_body_ratio",
+            "inverted_hammer_min_upper_wick_body_ratio",
+        )
+
+        for field_name in ratio_fields + positive_fields:
+            value = getattr(self, field_name)
+
+            if not isinstance(value, Decimal) or not value.is_finite():
+                raise ValueError(
+                    f"{field_name} must be a finite Decimal."
+                )
+
+        for field_name in ratio_fields:
+            value = getattr(self, field_name)
+
+            if not Decimal("0") <= value <= Decimal("1"):
+                raise ValueError(
+                    f"{field_name} must be between 0 and 1."
+                )
+
+        for field_name in positive_fields:
+            value = getattr(self, field_name)
+
+            if value <= Decimal("0"):
+                raise ValueError(
+                    f"{field_name} must be greater than zero."
+                )
+
+
+DEFAULT_PATTERN_CONFIG = CandlestickPatternConfig()

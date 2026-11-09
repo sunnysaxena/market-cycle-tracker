@@ -1,0 +1,31 @@
+MULTI-TIMEFRAME AGGREGATION SUMMARY
+============================================================
+Import batch: 5
+Reference date: 2026-11-01
+Instruments: 6
+OHLC aggregates: 5953
+Close aggregates: 5984
+
+BANKNIFTY 1M: 202
+BANKNIFTY 1W: 878
+BANKNIFTY 1Y: 17
+FINNIFTY 1M: 177
+FINNIFTY 1W: 766
+FINNIFTY 1Y: 15
+INDIA_VIX 1M: 202
+INDIA_VIX 1W: 878
+INDIA_VIX 1Y: 17
+MIDCPNIFTY 1M: 52
+MIDCPNIFTY 1W: 224
+MIDCPNIFTY 1Y: 5
+NIFTY50 1M: 202
+NIFTY50 1W: 878
+NIFTY50 1Y: 17
+SENSEX 1M: 262
+SENSEX 1W: 1139
+SENSEX 1Y: 22
+
+SQLite integrity: ok
+Foreign-key errors: 0
+
+Session coverage status: NOT CHECKED
