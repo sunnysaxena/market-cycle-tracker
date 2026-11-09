@@ -15,11 +15,15 @@ const MultiTimeframePage = lazy(
   () => import('./components/MultiTimeframePage')
 )
 
+const MarketPhaseMonitor = lazy(
+  () => import('./components/market-phase/MarketPhaseMonitor')
+)
+
 const navigation = [
   { name: 'Overview Dashboard', icon: LayoutDashboard },
   { name: 'Index Analysis', icon: CandlestickChart },
   { name: 'Multi-Timeframe Analysis', icon: BarChart3 },
-  { name: 'Cycle History', icon: Clock },
+  { name: 'Market Phase Monitor', icon: Clock },
   { name: 'Technical Analysis', icon: Activity },
   { name: 'FII / DII Activity', icon: Users },
   { name: 'Data Management', icon: Database },
@@ -389,7 +393,17 @@ function App() {
                     error={selectedAnalysis?.error || apiError}
                   />
                 </Suspense>
-              ) : activePage === 'Overview Dashboard' ? (
+                ) : activePage === 'Market Phase Monitor' ? (
+                  <Suspense
+                    fallback={
+                      <div className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-500 dark:border-slate-800 dark:bg-[#111827]">
+                        Loading Market Phase Monitor...
+                      </div>
+                    }
+                  >
+                  <MarketPhaseMonitor indices={marketIndices} />
+                  </Suspense>
+                ) : activePage === 'Overview Dashboard' ? (
                 <>
               <div className="mb-6">
                 <h2 className="text-2xl font-bold">Market Overview</h2>
