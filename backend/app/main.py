@@ -5,10 +5,10 @@ from sqlalchemy import select
 
 from app.api.v1.indices import router as indices_router
 from app.core.database import SessionLocal
-from app.models.index import Index, IndexProviderMapping
+from app.models.index import Index
 from app.api.v1.providers import router as providers_router
 from app.api.v1.cycles import cycles_router
-
+from app.api.v1.candlesticks import router as candlesticks_router
 
 
 from app.api.exception_handlers import (
@@ -19,7 +19,6 @@ from app.api.v1.market import router as market_router
 from app.api.v1.indicators import router as indicators_router
 from app.api.v1.structure import router as structure_router
 from app.api.v1.multi_timeframe import router as multi_timeframe_router
-
 
 
 DEFAULT_INDICES = [
@@ -151,6 +150,11 @@ app.include_router(
 
 app.include_router(
     cycles_router, 
+    prefix="/api/v1",
+)
+
+app.include_router(
+    candlesticks_router,
     prefix="/api/v1",
 )
 

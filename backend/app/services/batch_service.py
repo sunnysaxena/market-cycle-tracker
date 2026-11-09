@@ -32,12 +32,6 @@ class NoCompletedBatchError(BatchResolutionError):
     error_code = "NO_COMPLETED_BATCH"
 
 
-class NoCompletedBatchError(BatchResolutionError):
-    """Raised when no completed historical batch is available."""
-
-    status_code = 409
-
-
 def resolve_import_batch(
     db: Session,
     import_batch_id: int | None = None,

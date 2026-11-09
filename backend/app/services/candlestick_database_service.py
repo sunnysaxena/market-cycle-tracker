@@ -34,6 +34,8 @@ from app.services.candlestick_analysis_service import (
     analyze_candlestick_patterns,
 )
 
+class NoEligibleCandlesError(ValueError):
+    """Raised when no eligible historical candles exist."""
 
 @dataclass(frozen=True)
 class CandlestickDatabaseCandle:
@@ -193,7 +195,7 @@ def _load_eligible_candles(
     )
 
     if not rows:
-        raise ValueError(
+        raise NoEligibleCandlesError(
             "No eligible candles were found for "
             f"{instrument_code}, timeframe {timeframe}, "
             f"batch {import_batch_id}."
