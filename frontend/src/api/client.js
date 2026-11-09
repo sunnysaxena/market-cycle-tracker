@@ -45,7 +45,6 @@ function buildQuery(options = {}) {
 
   params.set('limit', String(limit))
   params.set('offset', String(offset))
-
   return params.toString()
 }
 
@@ -67,10 +66,13 @@ export function getMultiTimeframeAnalysis(instrument, importBatchId) {
 }
 
 export function getMarketHistory(instrument, options = {}) {
-  const query = buildQuery(options)
+  const { sortOrder = 'asc', ...queryOptions } = options
+  const params = new URLSearchParams(buildQuery(queryOptions))
+
+  params.set('sort_order', sortOrder)
 
   const endpoint =
-    `/market/${encodeURIComponent(instrument)}/history?${query}`
+    `/market/${encodeURIComponent(instrument)}/history?${params.toString()}`
 
   return request(endpoint)
 }

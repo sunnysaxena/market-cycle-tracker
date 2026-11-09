@@ -33,6 +33,7 @@ def get_market_history(
     end_date: date | None = None,
     limit: int = 500,
     offset: int = 0,
+    sort_order: Literal["asc", "desc"] = "asc",
 ) -> MarketHistoryResponse:
     """
     Read historical OHLCV records without calculating or modifying data.
@@ -133,10 +134,16 @@ def get_market_history(
         .where(*availability_conditions)
     )
 
+    order_column = (
+        date_column.desc()
+        if sort_order == "desc"
+        else date_column.asc()
+    )
+
     statement = (
         select(model)
         .where(*filtered_conditions)
-        .order_by(date_column.asc())
+        .order_by(order_column)
         .offset(offset)
         .limit(limit)
     )

@@ -28,6 +28,7 @@ def market_history(
     end_date: date | None = Query(default=None),
     limit: int = Query(default=500, ge=1, le=2000),
     offset: int = Query(default=0, ge=0),
+    sort_order: Literal["asc", "desc"] = Query(default="asc"),
     db: Session = Depends(get_db),
 ):
     if start_date is not None and end_date is not None:
@@ -46,4 +47,5 @@ def market_history(
         end_date=end_date,
         limit=limit,
         offset=offset,
+        sort_order=sort_order,
     )
