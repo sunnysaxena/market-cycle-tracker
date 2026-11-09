@@ -564,28 +564,39 @@ function App() {
                       ).toLowerCase()
 
                       const marketCondition =
-                        (structureState.includes('bullish') ||
-                          structureState.includes('uptrend')) &&
-                        cycleState.includes('markup')
+                        structureState === 'insufficient_data' ||
+                        cycleState === 'insufficient_data' ||
+                        !structureState ||
+                        !cycleState
                           ? {
-                              label: 'Risk-On',
-                              color: 'text-green-600 dark:text-green-400',
-                              badge: 'bg-green-100 text-green-700 dark:bg-green-900/60 dark:text-green-300',
+                              label: 'Unavailable',
+                              color: 'text-slate-600 dark:text-slate-400',
+                              badge: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
                             }
-                          : (structureState.includes('bearish') ||
-                              structureState.includes('downtrend')) &&
-                            cycleState.includes('markdown')
+                          : structureState === 'bullish' && cycleState === 'markup'
                             ? {
-                                label: 'Risk-Off',
-                                color: 'text-red-600 dark:text-red-400',
-                                badge: 'bg-red-100 text-red-700 dark:bg-red-900/60 dark:text-red-300',
+                                label: 'Risk-On',
+                                color: 'text-green-600 dark:text-green-400',
+                                badge: 'bg-green-100 text-green-700 dark:bg-green-900/60 dark:text-green-300',
                               }
-                            : {
-                                label: 'Transition / Unconfirmed',
-                                color: 'text-yellow-600 dark:text-yellow-400',
-                                badge: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/60 dark:text-yellow-300',
-                              }
-
+                            : structureState === 'bearish' && cycleState === 'markdown'
+                              ? {
+                                  label: 'Risk-Off',
+                                  color: 'text-red-600 dark:text-red-400',
+                                  badge: 'bg-red-100 text-red-700 dark:bg-red-900/60 dark:text-red-300',
+                                }
+                              : structureState === 'mixed_transition' &&
+                                  cycleState === 'sideways_consolidation'
+                                ? {
+                                    label: 'Neutral',
+                                    color: 'text-slate-600 dark:text-slate-300',
+                                    badge: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+                                  }
+                                : {
+                                    label: 'Transition / Unconfirmed',
+                                    color: 'text-yellow-600 dark:text-yellow-400',
+                                    badge: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/60 dark:text-yellow-300',
+                                  }
                       return (
                         <div
                           key={item.code}
