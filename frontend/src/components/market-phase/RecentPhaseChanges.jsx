@@ -1,7 +1,7 @@
-
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowRight, RefreshCw } from 'lucide-react'
+import { ArrowRight, Info, RefreshCw } from 'lucide-react'
 import { getAllMarketCycles } from '../../api/client'
+import InfoPopup from './InfoPopup'
 
 const TIMEFRAMES = [
   { id: '1D', label: 'Daily' },
@@ -31,6 +31,43 @@ function formatDate(value) {
     month: 'short',
     year: 'numeric',
   })
+}
+
+function getTransitionType(previousPhase, currentPhase) {
+  if (
+    previousPhase === 'MARKDOWN' &&
+    currentPhase === 'MARKUP'
+  ) {
+    return 'Bullish Reversal'
+  }
+
+  if (
+    previousPhase === 'MARKUP' &&
+    currentPhase === 'MARKDOWN'
+  ) {
+    return 'Bearish Reversal'
+  }
+
+  if (
+    previousPhase === 'TRANSITION_UNCERTAIN' ||
+    currentPhase === 'TRANSITION_UNCERTAIN'
+  ) {
+    return 'Uncertain Transition'
+  }
+
+  if (currentPhase === 'ACCUMULATION') {
+    return 'Moving into Accumulation'
+  }
+
+  if (currentPhase === 'DISTRIBUTION') {
+    return 'Moving into Distribution'
+  }
+
+  if (currentPhase === 'SIDEWAYS_CONSOLIDATION') {
+    return 'Entering Sideways'
+  }
+
+  return 'Other Phase Change'
 }
 
 function PhaseLabel({ phase }) {
@@ -68,6 +105,7 @@ export default function RecentPhaseChanges({ indices = [] }) {
 
   const [selectedIndex, setSelectedIndex] = useState('ALL')
   const [selectedTimeframe, setSelectedTimeframe] = useState('ALL')
+  const [showInfo, setShowInfo] = useState(false)
 
 
   const filteredChanges = useMemo(
@@ -154,6 +192,10 @@ export default function RecentPhaseChanges({ indices = [] }) {
               date: current.period_start,
               previousPhase,
               currentPhase,
+              transitionType: getTransitionType(
+                previousPhase,
+                currentPhase
+              ),
               ruleScore: current.rule_score,
             })
           }
@@ -209,9 +251,20 @@ export default function RecentPhaseChanges({ indices = [] }) {
     <section className="rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-[#111827]">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 p-5 dark:border-slate-800">
         <div>
-          <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
-            Recent Phase Changes
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+              Recent Phase Changes
+            </h3>
+            <button
+              type="button"
+              onClick={() => setShowInfo(true)}
+              aria-label="Recent Phase Changes information"
+              title="About Recent Phase Changes"
+              className="rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-blue-500 dark:hover:bg-slate-800 dark:hover:text-blue-400"
+            >
+              <Info size={16} />
+            </button>
+          </div>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Historical transitions across five indices and three timeframes
           </p>
@@ -268,6 +321,7 @@ export default function RecentPhaseChanges({ indices = [] }) {
                 <th className="px-5 py-3 font-medium">Date</th>
                 <th className="px-5 py-3 font-medium">Index</th>
                 <th className="px-5 py-3 font-medium">Timeframe</th>
+                <th className="px-5 py-3 font-medium">Transition Type</th>
                 <th className="px-5 py-3 font-medium">Previous Phase</th>
                 <th className="px-5 py-3 font-medium">New Phase</th>
                 <th className="px-5 py-3 text-right font-medium">
@@ -292,6 +346,12 @@ export default function RecentPhaseChanges({ indices = [] }) {
 
                   <td className="px-5 py-4 text-slate-600 dark:text-slate-300">
                     {change.timeframe}
+                  </td>
+
+                  <td className="px-5 py-4">
+                    <span className="inline-flex rounded-md border border-blue-500/20 bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-400">
+                      {change.transitionType}
+                    </span>
                   </td>
 
                   <td className="px-5 py-4">
@@ -326,6 +386,47 @@ export default function RecentPhaseChanges({ indices = [] }) {
           scores, not transition probabilities.
         </p>
       </div>
+            <InfoPopup
+        open={showInfo}
+        onClose={() => setShowInfo(false)}
+        title="Understanding Recent Phase Changes"
+      >
+        <div>
+          <h4 className="mb-2 font-semibold text-slate-900 dark:text-slate-100">
+            Field Information
+          </h4>
+
+          <ul className="space-y-2">
+            <li><strong>Date:</strong> Start date of the period in which the phase change was detected.</li>
+            <li><strong>Index:</strong> Market index associated with the classification.</li>
+            <li><strong>Timeframe:</strong> Daily, Weekly or Monthly analysis period.</li>
+            <li><strong>Transition Type:</strong> Category describing the movement between two consecutive phases.</li>
+            <li><strong>Previous Phase:</strong> Valid classification from the preceding period.</li>
+            <li><strong>New Phase:</strong> Classification detected in the current period.</li>
+            <li><strong>Rule Score:</strong> Classification score from 0–100, not a probability or prediction.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 className="mb-3 font-semibold text-slate-900 dark:text-slate-100">
+            Transition Type Definitions
+          </h4>
+
+          <div className="space-y-3">
+            <p><strong>Bullish Reversal:</strong> Markdown → Markup.</p>
+            <p><strong>Bearish Reversal:</strong> Markup → Markdown.</p>
+            <p><strong>Moving into Accumulation:</strong> Another valid phase → Accumulation.</p>
+            <p><strong>Moving into Distribution:</strong> Another valid phase → Distribution.</p>
+            <p><strong>Entering Sideways:</strong> Another valid phase → Sideways Consolidation.</p>
+            <p><strong>Uncertain Transition:</strong> Entering or leaving Transition Uncertain.</p>
+            <p><strong>Other Phase Change:</strong> Any remaining valid phase transition.</p>
+          </div>
+        </div>
+
+        <div className="rounded-lg bg-slate-100 p-3 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+          <strong>Important:</strong> Insufficient Data classifications are excluded from transition detection. Transition Uncertain indicates mixed or incomplete evidence; it does not confirm a bullish or bearish reversal.
+        </div>
+      </InfoPopup>
     </section>
   )
 }

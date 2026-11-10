@@ -1,3 +1,6 @@
+import { useState } from 'react'
+import { Info } from 'lucide-react'
+import InfoPopup from './InfoPopup'
 
 const timeframes = [
   { id: '1D', label: 'Daily' },
@@ -65,6 +68,8 @@ function calculateSynchronization(indices, analysis, timeframe) {
 }
 
 function PhaseSynchronization({ indices = [], analysis = {} }) {
+  const [showSyncInfo, setShowSyncInfo] = useState(false)
+  const [showAlignmentInfo, setShowAlignmentInfo] = useState(false)
   const summaries = timeframes.map((timeframe) => ({
     ...timeframe,
     ...calculateSynchronization(indices, analysis, timeframe.id),
@@ -93,9 +98,22 @@ function PhaseSynchronization({ indices = [], analysis = {} }) {
   return (
     <section className="space-y-4">
       <div>
-        <h3 className="text-lg font-semibold">
-          Market Synchronization
-        </h3>
+      <div className="flex items-center gap-2">
+          <h3 className="text-lg font-semibold">
+            Market Synchronization
+          </h3>
+
+          <button
+            type="button"
+            onClick={() => setShowSyncInfo(true)}
+            aria-label="Market Synchronization information"
+            title="About Market Synchronization"
+            className="rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-blue-500 dark:hover:bg-slate-800"
+          >
+            <Info size={16} />
+          </button>
+        </div>
+
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Measures how consistently the five indices share the same
           classification across timeframes
@@ -167,9 +185,22 @@ function PhaseSynchronization({ indices = [], analysis = {} }) {
 
       <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
         <div className="border-b border-slate-200 p-4 dark:border-slate-800">
-          <h4 className="font-semibold">
-            Cross-Timeframe Alignment
-          </h4>
+          <div className="flex items-center gap-2">
+            <h4 className="font-semibold">
+              Cross-Timeframe Alignment
+            </h4>
+
+            <button
+              type="button"
+              onClick={() => setShowAlignmentInfo(true)}
+              aria-label="Cross-Timeframe Alignment information"
+              title="About Cross-Timeframe Alignment"
+              className="rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-blue-500 dark:hover:bg-slate-800"
+            >
+              <Info size={16} />
+            </button>
+          </div>
+
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             Compares Daily, Weekly and Monthly classifications for each index
           </p>
@@ -244,7 +275,118 @@ function PhaseSynchronization({ indices = [], analysis = {} }) {
         valid and identical classifications across all three timeframes.
         Insufficient-data records are excluded from these calculations.
       </p>
+
+
+      <InfoPopup
+        open={showSyncInfo}
+        onClose={() => setShowSyncInfo(false)}
+        title="Understanding Market Synchronization"
+      >
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            What is Market Synchronization?
+          </h4>
+          <p>
+            It measures how consistently the tracked indices share the same
+            market-phase classification within a timeframe. It helps assess
+            whether indices are moving through similar market conditions.
+          </p>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            Dominant Phase
+          </h4>
+          <p>
+            The phase with the highest number of classified indices. It is
+            the largest group, not necessarily a majority.
+          </p>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            Synchronization Percentage
+          </h4>
+          <p>
+            Calculated as matching indices in the dominant phase divided by
+            all classified indices, multiplied by 100. Insufficient-data
+            indices are excluded from this calculation.
+          </p>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            Distinct Phases
+          </h4>
+          <p>
+            The number of different valid phase classifications currently
+            present across the indices. More distinct phases indicate greater
+            phase dispersion.
+          </p>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            Important Limitation
+          </h4>
+          <p>
+            High synchronization means agreement in classification, not
+            necessarily bullish direction. It is a descriptive market
+            breadth measure, not a trading signal.
+          </p>
+        </div>
+      </InfoPopup>
+
+      <InfoPopup
+        open={showAlignmentInfo}
+        onClose={() => setShowAlignmentInfo(false)}
+        title="Understanding Cross-Timeframe Alignment"
+      >
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            What is Cross-Timeframe Alignment?
+          </h4>
+          <p>
+            It compares an individual index's Daily, Weekly and Monthly
+            market-phase classifications to determine whether all three
+            timeframes agree.
+          </p>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            Aligned
+          </h4>
+          <p>
+            All three timeframes must have valid classifications, and all
+            three classifications must be identical.
+          </p>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            Not Aligned
+          </h4>
+          <p>
+            The current implementation displays Not aligned if classifications
+            differ or if one or more timeframes have insufficient data.
+            These are two different situations.
+          </p>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            Important Limitation
+          </h4>
+          <p>
+            Alignment indicates consistency across timeframes. It does not
+            establish bullish or bearish direction, nor does it guarantee
+            future market behaviour.
+          </p>
+        </div>
+      </InfoPopup>
     </section>
+
   )
 }
 

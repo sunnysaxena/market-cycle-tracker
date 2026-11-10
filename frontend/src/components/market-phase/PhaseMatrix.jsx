@@ -1,3 +1,6 @@
+import { useState } from 'react'
+import { Info } from 'lucide-react'
+import InfoPopup from './InfoPopup'
 
 const timeframes = [
   { id: '1D', label: 'Daily' },
@@ -71,6 +74,7 @@ function PhaseCell({ snapshot, timeframe }) {
 }
 
 function PhaseMatrix({ indices, analysis, loading, error }) {
+  const [showInfo, setShowInfo] = useState(false)
   if (loading) {
     return (
       <div className="rounded-xl border border-slate-200 p-8 text-center dark:border-slate-800">
@@ -93,9 +97,22 @@ function PhaseMatrix({ indices, analysis, loading, error }) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h3 className="text-lg font-semibold">
-            Index-wise Phase Matrix
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-semibold">
+              Index-wise Phase Matrix
+            </h3>
+
+            <button
+              type="button"
+              onClick={() => setShowInfo(true)}
+              aria-label="Index-wise Phase Matrix information"
+              title="About Index-wise Phase Matrix"
+              className="rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-blue-500 dark:hover:bg-slate-800"
+            >
+              <Info size={16} />
+            </button>
+          </div>
+
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             Current stored classification across five indices and four timeframes
           </p>
@@ -162,6 +179,88 @@ function PhaseMatrix({ indices, analysis, loading, error }) {
         is missing. Yearly periods show the actual stored period, not an assumed
         current-year classification.
       </p>
+      <InfoPopup
+        open={showInfo}
+        onClose={() => setShowInfo(false)}
+        title="Understanding the Index-wise Phase Matrix"
+      >
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            What is the Phase Matrix?
+          </h4>
+          <p>
+            The matrix compares the stored market-cycle classifications
+            of NIFTY50, BANKNIFTY, SENSEX, FINNIFTY and MIDCPNIFTY
+            across Daily, Weekly, Monthly and Yearly timeframes.
+          </p>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            Understanding the Phase Labels
+          </h4>
+          <p>
+            Accumulation, Markup, Distribution, Markdown, Sideways
+            Consolidation and Transition Uncertain are the classifications
+            produced by the existing market-cycle engine.
+          </p>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            Availability Status
+          </h4>
+          <p>
+            The status indicates data availability for that index and
+            timeframe. Partial availability does not automatically mean
+            that a phase classification is missing.
+          </p>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            Period
+          </h4>
+          <p>
+            Shows the actual stored period associated with the classification.
+            Weekly, Monthly and Yearly periods may have different start and
+            end dates.
+          </p>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            Rule Score
+          </h4>
+          <p>
+            The score represents the classification engine's rule score
+            on a scale of 0–100. It is not a probability, confidence
+            percentage or prediction of future returns.
+          </p>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            Insufficient Data
+          </h4>
+          <p>
+            Indicates that a usable classification is unavailable for
+            the corresponding index and timeframe. It should not be
+            interpreted as a bearish or bullish phase.
+          </p>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            Important Limitation
+          </h4>
+          <p>
+            This matrix displays existing stored classifications. It does
+            not recalculate phases or generate independent trading signals.
+          </p>
+        </div>
+      </InfoPopup>
+
     </div>
   )
 }

@@ -1,3 +1,6 @@
+import { useState } from 'react'
+import { Info } from 'lucide-react'
+import InfoPopup from './InfoPopup'
 
 const timeframes = [
   { id: '1D', label: 'Daily' },
@@ -25,6 +28,7 @@ const phaseLabels = {
 }
 
 function PhaseBreadthSummary({ indices = [], analysis = {} }) {
+  const [showInfo, setShowInfo] = useState(false)
   const summaries = timeframes.map((timeframe) => {
     const counts = {}
     let classified = 0
@@ -59,13 +63,26 @@ function PhaseBreadthSummary({ indices = [], analysis = {} }) {
   return (
     <section className="space-y-4">
       <div>
-        <h3 className="text-lg font-semibold">
-          Market Phase Breadth
-        </h3>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Distribution of stored classifications across the five market indices
-        </p>
-      </div>
+        <div className="flex items-center gap-2">
+            <h3 className="text-lg font-semibold">
+              Market Phase Breadth
+            </h3>
+
+            <button
+              type="button"
+              onClick={() => setShowInfo(true)}
+              aria-label="Market Phase Breadth information"
+              title="About Market Phase Breadth"
+              className="rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-blue-500 dark:hover:bg-slate-800"
+            >
+              <Info size={16} />
+            </button>
+          </div>
+
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            Distribution of stored classifications across the five market indices
+          </p>
+        </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {summaries.map((summary) => (
@@ -141,6 +158,76 @@ function PhaseBreadthSummary({ indices = [], analysis = {} }) {
         volume. Insufficient-data records are excluded from phase distribution.
         Transition Uncertain remains a valid classification.
       </p>
+
+      <InfoPopup
+        open={showInfo}
+        onClose={() => setShowInfo(false)}
+        title="Understanding Market Phase Breadth"
+      >
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            What is Market Phase Breadth?
+          </h4>
+          <p>
+            Market Phase Breadth shows how the five tracked indices are distributed
+            across their current market-cycle classifications for Daily, Weekly,
+            Monthly, and Yearly timeframes.
+          </p>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            Classified Indices
+          </h4>
+          <p>
+            The classified count shows how many indices have a valid classification
+            out of the total five indices.
+          </p>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            Dominant Phase
+          </h4>
+          <p>
+            The most common phase among the valid classifications. It represents
+            the highest count, not necessarily a majority.
+          </p>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            Phase Distribution
+          </h4>
+          <p>
+            Each colored segment represents the number of indices in that phase.
+            Segment width is calculated against all five indices, so insufficient
+            data is not silently redistributed among the valid phases.
+          </p>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            Insufficient Data
+          </h4>
+          <p>
+            Indices without a usable classification, including INSUFFICIENT_DATA,
+            are excluded from phase counts and shown separately.
+          </p>
+        </div>
+
+        <div>
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+            Important Interpretation
+          </h4>
+          <p>
+            Transition Uncertain is a valid classification and remains included
+            in breadth calculations. Breadth counts indices equally; they do not
+            represent market capitalization, trading volume, or market-wide
+            probability.
+          </p>
+        </div>
+      </InfoPopup>
     </section>
   )
 }
