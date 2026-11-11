@@ -17,6 +17,7 @@ import PhaseHistory from './PhaseHistory'
 import PhaseTransitions from './PhaseTransitions'
 import PhaseStrength from './PhaseStrength'
 import ResearchLab from './ResearchLab'
+import MarketRegimeAssessment from './MarketRegimeAssessment'
 
 const tabs = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -145,6 +146,10 @@ function MarketPhaseMonitor({ indices = [] }) {
             />
           ) : (
             <div className="space-y-6">
+              <MarketRegimeAssessment
+                indices={indices}
+                analysis={analysis}
+              />
               <PhaseBreadthSummary
                 indices={indices}
                 analysis={analysis}
