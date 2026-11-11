@@ -143,7 +143,7 @@ export default function CustomDatePicker({
               setIsOpen(false)
             }
           }}
-          className="h-9 w-40 rounded-md border border-slate-300 bg-white py-2 pl-3 pr-10 text-xs font-medium text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+          className="h-10 w-full rounded-lg border border-slate-300 bg-white pl-3 pr-12 text-sm font-medium text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
         />
 
         <button
@@ -151,7 +151,7 @@ export default function CustomDatePicker({
           onClick={() => setIsOpen((current) => !current)}
           aria-label={`Open ${label || 'date'} calendar`}
           aria-expanded={isOpen}
-          className="absolute inset-y-0 right-0 flex w-9 items-center justify-center text-slate-500 transition-colors hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400"
+          className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-slate-500 transition-colors hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400"
         >
           <CalendarDays size={16} />
         </button>

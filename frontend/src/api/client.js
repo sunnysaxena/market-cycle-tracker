@@ -1,4 +1,4 @@
-﻿const API_BASE_URL = '/api/v1'
+const API_BASE_URL = '/api/v1'
 
 async function request(endpoint) {
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -164,4 +164,101 @@ export async function getAllMarketCycles(instrument, options = {}) {
       returned_count: records.length,
     },
   }
+}
+
+
+export async function getAllMarketHistory(instrument, options = {}) {
+  const pageSize = options.limit ?? 2000
+  const records = []
+
+  if (!Number.isInteger(pageSize) || pageSize < 1 || pageSize > 2000) {
+    throw new Error('Market history page size must be between 1 and 2000.')
+  }
+
+  let offset = options.offset ?? 0
+  let expectedTotal = null
+  let batchId = null
+
+  while (expectedTotal === null || offset < expectedTotal) {
+    const response = await getMarketHistory(instrument, {
+      ...options,
+      limit: pageSize,
+      offset,
+    })
+
+    const pageRecords = response.records ?? []
+    const pagination = response.pagination
+
+    if (!pagination) {
+      throw new Error('Market history API returned missing pagination metadata.')
+    }
+
+    if (pageRecords.length !== pagination.returned_count) {
+      throw new Error('Market history API returned an inconsistent record count.')
+    }
+
+    if (expectedTotal === null) {
+      expectedTotal = pagination.total_records
+      batchId = response.batch?.import_batch_id ?? null
+    } else if (pagination.total_records !== expectedTotal) {
+      throw new Error('Market history changed during pagination.')
+    }
+
+    if (batchId !== (response.batch?.import_batch_id ?? null)) {
+      throw new Error('Market history import batch changed during pagination.')
+    }
+
+    if (pageRecords.length === 0 && offset < expectedTotal) {
+      throw new Error('Market history pagination ended before all records were retrieved.')
+    }
+
+    records.push(...pageRecords)
+    offset += pageRecords.length
+  }
+
+  return {
+    instrument_code: instrument,
+    timeframe: options.timeframe,
+    batch: { import_batch_id: batchId },
+    records,
+    pagination: {
+      total_records: expectedTotal ?? 0,
+      returned_count: records.length,
+    },
+  }
+}
+
+
+export function getForwardReturnsByPhase(instrument, options = {}) {
+  const params = new URLSearchParams()
+
+  const {
+    timeframe,
+    importBatchId,
+    startDate,
+    endDate,
+  } = options
+
+  if (!timeframe) {
+    throw new Error('Timeframe is required for forward-return analysis.')
+  }
+
+  params.set('timeframe', timeframe)
+
+  if (importBatchId !== undefined && importBatchId !== null) {
+    params.set('import_batch_id', String(importBatchId))
+  }
+
+  if (startDate) {
+    params.set('start_date', startDate)
+  }
+
+  if (endDate) {
+    params.set('end_date', endDate)
+  }
+
+  const endpoint =
+    `/research/${encodeURIComponent(instrument)}/forward-returns`
+
+  return request(`${endpoint}?${params.toString()}`)
 }

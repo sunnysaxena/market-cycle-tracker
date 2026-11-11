@@ -13,6 +13,10 @@ import PhaseMatrix from './PhaseMatrix'
 import PhaseBreadthSummary from './PhaseBreadthSummary'
 import PhaseSynchronization from './PhaseSynchronization'
 import RecentPhaseChanges from './RecentPhaseChanges'
+import PhaseHistory from './PhaseHistory'
+import PhaseTransitions from './PhaseTransitions'
+import PhaseStrength from './PhaseStrength'
+import ResearchLab from './ResearchLab'
 
 const tabs = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -130,52 +134,67 @@ function MarketPhaseMonitor({ indices = [] }) {
           </p>
         </div>
 
+
         {activeTab === 'overview' ? (
-  loading ? (
-        <PhaseMatrix
-        indices={indices}
-        analysis={analysis}
-        loading={loading}
-        error={error}
-        />
-    ) : (
-        <div className="space-y-6">
-            <PhaseBreadthSummary
-                indices={indices}
-                analysis={analysis}
-            />
-
-            <PhaseSynchronization
-                indices={indices}
-                analysis={analysis}
-            />
-
+          loading ? (
             <PhaseMatrix
+              indices={indices}
+              analysis={analysis}
+              loading={loading}
+              error={error}
+            />
+          ) : (
+            <div className="space-y-6">
+              <PhaseBreadthSummary
+                indices={indices}
+                analysis={analysis}
+              />
+
+              <PhaseSynchronization
+                indices={indices}
+                analysis={analysis}
+              />
+
+              <PhaseMatrix
                 indices={indices}
                 analysis={analysis}
                 loading={loading}
                 error={error}
-            />
+              />
 
-            <RecentPhaseChanges indices={indices} />
-        </div>
-    )
-    ) : (
-        <div className="min-h-72 rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#111827]">
+              <RecentPhaseChanges indices={indices} />
+            </div>
+          )
+          ) : activeTab === 'history' ? (
+                <PhaseHistory indices={indices} />
+                ) : activeTab === 'transitions' ? (
+            <PhaseTransitions indices={indices} />
+            ) : activeTab === 'strength' ? (
+            <PhaseStrength
+              indices={indices}
+              analysis={analysis}
+              loading={loading}
+              error={error}
+            />
+          ) : activeTab === 'research' ? (
+            <ResearchLab indices={indices} />
+          ) : (
+
+          <div className="min-h-72 rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#111827]">
             <div className="flex min-h-60 flex-col items-center justify-center text-center">
-            <BarChart3
+              <BarChart3
                 size={36}
                 className="mb-4 text-slate-400"
-            />
-            <h4 className="font-semibold">
+              />
+              <h4 className="font-semibold">
                 {tabs.find((tab) => tab.id === activeTab)?.label} Analytics
-            </h4>
-            <p className="mt-2 max-w-lg text-sm text-slate-500 dark:text-slate-400">
+              </h4>
+              <p className="mt-2 max-w-lg text-sm text-slate-500 dark:text-slate-400">
                 This section will be connected to the verified historical market-cycle
                 data in the next implementation stages.
-            </p>
+              </p>
             </div>
-        </div>
+          </div>
         )}
       </div>
     </div>

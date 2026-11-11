@@ -304,10 +304,14 @@ export default function TechnicalIndicatorCharts({
                   return (
                     <rect
                       x={x}
-                      y={y}
+                      y={height < 0 ? y + height : y}
                       width={width}
-                      height={height}
-                      fill={(payload?.macdHistogram ?? 0) >= 0 ? '#22c55e' : '#ef4444'}
+                      height={Math.abs(height)}
+                      fill={
+                        (payload?.macdHistogram ?? 0) >= 0
+                          ? '#22c55e'
+                          : '#ef4444'
+                      }
                       opacity={0.65}
                     />
                   )

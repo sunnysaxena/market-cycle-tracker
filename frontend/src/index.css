@@ -53,3 +53,7 @@ button {
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
+.recharts-surface:focus:not(:focus-visible) {
+  outline: none;
+}

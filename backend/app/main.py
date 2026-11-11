@@ -15,6 +15,7 @@ from app.api.v1.indicators import router as indicators_router
 from app.api.v1.structure import router as structure_router
 from app.api.v1.multi_timeframe import router as multi_timeframe_router
 from app.api.v1.batches import router as batches_router
+from app.api.v1.research import router as research_router
 from app.core.database import SessionLocal
 from app.models.index import Index
 from app.services.api_errors import APIServiceError
@@ -128,6 +129,11 @@ app.include_router(
 
 app.include_router(
     providers_router,
+    prefix="/api/v1",
+)
+
+app.include_router(
+    research_router,
     prefix="/api/v1",
 )
 
