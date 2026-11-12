@@ -122,14 +122,6 @@ function App() {
 
         setIndices(result)
 
-        // console.table(
-        //   result.map((item) => ({
-        //   code: item.code,
-        //   name: item.name,
-        //   category: item.category,
-        // }))
-        // )
-
         const firstMarketIndex = result.find(
           (item) => item.category === 'market_index',
         )

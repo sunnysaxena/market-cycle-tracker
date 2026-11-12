@@ -82,7 +82,7 @@ function PhaseBreadthSummary({ indices = [], analysis = {} }) {
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Distribution of stored classifications across the five market indices
           </p>
-        </div>
+      </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {summaries.map((summary) => (

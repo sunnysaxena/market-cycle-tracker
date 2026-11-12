@@ -1,6 +1,5 @@
-
 import { useState } from 'react'
-import { Info, Activity } from 'lucide-react'
+import { Info } from 'lucide-react'
 import InfoPopup from './InfoPopup'
 
 const timeframes = [
@@ -201,7 +200,6 @@ function PhaseStrength({ indices = [], analysis = {}, loading, error }) {
           Loading market strength data...
         </div>
       )}
-
       {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
           {error}
@@ -257,25 +255,33 @@ function PhaseStrength({ indices = [], analysis = {}, loading, error }) {
             <div className="mb-5 flex items-center justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2">
-                  <Activity size={19} className="text-blue-500" />
                   <h4 className="font-semibold text-slate-900 dark:text-slate-100">
                     Phase Strength & Classification
                   </h4>
+                  <button
+                    type="button"
+                    onClick={() => setShowInfo(true)}
+                    aria-label="Phase classification information"
+                    className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    <Info size={18} />
+                </button>
                 </div>
 
                 <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                   {activeIndex?.name ?? activeCode ?? 'No index'} · {selectedTimeframe}
                 </p>
+
               </div>
 
-              <button
+              {/* <button
                 type="button"
                 onClick={() => setShowInfo(true)}
                 aria-label="Phase classification information"
                 className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
               >
                 <Info size={18} />
-              </button>
+              </button> */}
             </div>
 
             {!snapshot || !cycle ? (
@@ -635,7 +641,9 @@ function PhaseStrength({ indices = [], analysis = {}, loading, error }) {
                 </h5>
 
                 <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                  The engine requires at least two of these three indicator conditions.
+                  Indicator evidence only: at least two of these three conditions
+                  must be met. Official sideways classification also requires
+                  qualifying market structure and no active breakout.
                 </p>
 
                 <div className="mt-4 space-y-3">
@@ -732,10 +740,28 @@ function PhaseStrength({ indices = [], analysis = {}, loading, error }) {
               the existing Market Cycle Classification Engine. It is not a
               separate composite strength indicator.
             </p>
+
             <p>
               Bandwidth percentile provides volatility-context information.
               Supporting evidence and missing inputs explain the basis and
               limitations of the current classification.
+            </p>
+
+            <p>
+              Sideways indicator evidence evaluates three conditions:
+              CHOP 14 at or above its configured sideways threshold,
+              ADX 14 below its configured weak-trend threshold, and
+              Bollinger Bandwidth percentile at or below its configured
+              low-volatility threshold. At least two of these three
+              conditions must be met.
+            </p>
+
+            <p>
+              These indicator conditions alone do not confirm a sideways
+              classification. The backend also requires MIXED_TRANSITION
+              market structure and NONE breakout status. The official
+              classification displayed in this panel remains the result
+              produced by the existing classification engine.
             </p>
           </InfoPopup>
         </>
