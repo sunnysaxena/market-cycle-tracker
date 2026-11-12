@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Info } from 'lucide-react'
 import InfoPopup from './InfoPopup'
 
@@ -35,7 +35,7 @@ function formatPeriod(period) {
     return period.period_start
   }
 
-  return `${period.period_start} – ${period.period_end}`
+  return `${period.period_start} â€“ ${period.period_end}`
 }
 
 function PhaseCell({ snapshot, timeframe }) {
@@ -107,7 +107,7 @@ function PhaseMatrix({ indices, analysis, loading, error }) {
               onClick={() => setShowInfo(true)}
               aria-label="Index-wise Phase Matrix information"
               title="About Index-wise Phase Matrix"
-              className="rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-blue-500 dark:hover:bg-slate-800"
+              className="rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-primary-hover dark:hover:bg-slate-800"
             >
               <Info size={16} />
             </button>
@@ -119,7 +119,7 @@ function PhaseMatrix({ indices, analysis, loading, error }) {
         </div>
 
         <span className="rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-500 dark:border-slate-700">
-          5 Indices · 4 Timeframes
+          5 Indices Â· 4 Timeframes
         </span>
       </div>
 
@@ -234,7 +234,7 @@ function PhaseMatrix({ indices, analysis, loading, error }) {
           </h4>
           <p>
             The score represents the classification engine's rule score
-            on a scale of 0–100. It is not a probability, confidence
+            on a scale of 0â€“100. It is not a probability, confidence
             percentage or prediction of future returns.
           </p>
         </div>

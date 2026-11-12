@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Info } from 'lucide-react'
 import InfoPopup from './InfoPopup'
 
@@ -48,15 +48,21 @@ function PhaseBreadthSummary({ indices = [], analysis = {} }) {
       classified += 1
     })
 
-    const dominantPhase = Object.entries(counts)
-      .sort((a, b) => b[1] - a[1])[0]?.[0] ?? null
+    const highestCount = Math.max(0, ...Object.values(counts))
+
+    const dominantPhases =
+      highestCount > 0
+        ? Object.entries(counts)
+            .filter(([, count]) => count === highestCount)
+            .map(([phase]) => phase)
+        : []
 
     return {
       ...timeframe,
       counts,
       classified,
       insufficient,
-      dominantPhase,
+      dominantPhases,
     }
   })
 
@@ -73,14 +79,14 @@ function PhaseBreadthSummary({ indices = [], analysis = {} }) {
               onClick={() => setShowInfo(true)}
               aria-label="Market Phase Breadth information"
               title="About Market Phase Breadth"
-              className="rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-blue-500 dark:hover:bg-slate-800"
+              className="rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-primary-hover dark:hover:bg-slate-800"
             >
               <Info size={16} />
             </button>
           </div>
 
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Distribution of stored classifications across the five market indices
+            Distribution of stored classifications across {indices.length} registered market indices
           </p>
       </div>
 
@@ -98,15 +104,25 @@ function PhaseBreadthSummary({ indices = [], analysis = {} }) {
             </div>
 
             <div className="mt-4">
-              {summary.dominantPhase ? (
+              {summary.dominantPhases.length > 0 ? (
                 <>
                   <p className="text-xs text-slate-500">
-                    Most common phase
+                    {summary.dominantPhases.length === 1
+                      ? 'Most common phase'
+                      : 'Tied most common phases'}
                   </p>
+
                   <p className="mt-1 text-lg font-bold">
-                    {phaseLabels[summary.dominantPhase] ??
-                      summary.dominantPhase}
+                    {summary.dominantPhases
+                      .map((phase) => phaseLabels[phase] ?? phase)
+                      .join(', ')}
                   </p>
+
+                  {summary.dominantPhases.length > 1 && (
+                    <p className="mt-1 text-xs text-slate-500">
+                      {summary.counts[summary.dominantPhases[0]]} indices each
+                    </p>
+                  )}
                 </>
               ) : (
                 <p className="text-sm text-slate-500">
@@ -169,7 +185,7 @@ function PhaseBreadthSummary({ indices = [], analysis = {} }) {
             What is Market Phase Breadth?
           </h4>
           <p>
-            Market Phase Breadth shows how the five tracked indices are distributed
+            Market Phase Breadth shows how the tracked market indices are distributed
             across their current market-cycle classifications for Daily, Weekly,
             Monthly, and Yearly timeframes.
           </p>
@@ -181,7 +197,7 @@ function PhaseBreadthSummary({ indices = [], analysis = {} }) {
           </h4>
           <p>
             The classified count shows how many indices have a valid classification
-            out of the total five indices.
+            out of {indices.length} registered market indices.
           </p>
         </div>
 
@@ -201,8 +217,8 @@ function PhaseBreadthSummary({ indices = [], analysis = {} }) {
           </h4>
           <p>
             Each colored segment represents the number of indices in that phase.
-            Segment width is calculated against all five indices, so insufficient
-            data is not silently redistributed among the valid phases.
+            Segment width is calculated against all registered market indices, so
+            insufficient data is not silently redistributed among the valid phases.
           </p>
         </div>
 

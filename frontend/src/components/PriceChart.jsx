@@ -1,9 +1,14 @@
+﻿
 import { useEffect, useRef, useState } from 'react'
 import {
   createChart,
   CandlestickSeries,
   LineSeries,
 } from 'lightweight-charts'
+
+const DEFAULT_CHART_HEIGHT = 550
+const MIN_CHART_HEIGHT = 350
+const MAX_CHART_HEIGHT = 900
 
 const EMA_OPTIONS = [
   { key: 'ema9', label: 'EMA 9', color: '#facc15' },
@@ -23,84 +28,94 @@ const INITIAL_VISIBILITY = {
   sma222: false,
 }
 
+function getChartTheme(isDark) {
+  const backgroundColor = isDark ? '#111827' : '#ffffff'
+  const textColor = isDark ? '#cbd5e1' : '#334155'
+  const gridColor = isDark ? '#263244' : '#e2e8f0'
+  const borderColor = isDark ? '#334155' : '#cbd5e1'
+  const crosshairColor = isDark ? '#64748b' : '#94a3b8'
+
+  return {
+    layout: {
+      background: {
+        type: 'solid',
+        color: backgroundColor,
+      },
+      textColor,
+      fontFamily: 'Inter, system-ui, sans-serif',
+      fontSize: 12,
+    },
+
+    grid: {
+      vertLines: { color: gridColor },
+      horzLines: { color: gridColor },
+    },
+
+    rightPriceScale: {
+      borderColor,
+      autoScale: true,
+    },
+
+    timeScale: {
+      borderColor,
+      timeVisible: true,
+      secondsVisible: false,
+      rightOffset: 5,
+    },
+
+    crosshair: {
+      vertLine: {
+        color: crosshairColor,
+        width: 1,
+        style: 2,
+        labelBackgroundColor: '#475569',
+      },
+      horzLine: {
+        color: crosshairColor,
+        width: 1,
+        style: 2,
+        labelBackgroundColor: '#475569',
+      },
+    },
+  }
+}
+
 export default function PriceChart({
   data = [],
   loading = false,
   error = null,
   timeframe = '1D',
   isDark = true,
+  fitContentKey = 0,
   onVisibleRangeChange,
 }) {
-
   const containerRef = useRef(null)
   const chartRef = useRef(null)
   const candleSeriesRef = useRef(null)
   const emaSeriesRef = useRef({})
 
   const onVisibleRangeChangeRef = useRef(onVisibleRangeChange)
+  const resizeStartRef = useRef(null)
+  const lastFitContentKeyRef = useRef(null)
+
+  const [visibility, setVisibility] = useState(INITIAL_VISIBILITY)
+  const [showMaDropdown, setShowMaDropdown] = useState(false)
+  const [chartHeight, setChartHeight] = useState(DEFAULT_CHART_HEIGHT)
 
   useEffect(() => {
     onVisibleRangeChangeRef.current = onVisibleRangeChange
   }, [onVisibleRangeChange])
 
-  const [visibility, setVisibility] = useState(INITIAL_VISIBILITY)
-  const [showMaDropdown, setShowMaDropdown] = useState(false)
-
-  // Create the chart and its series.
+  // Create the chart once. Theme updates are handled separately.
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
 
-    const backgroundColor = isDark ? '#111827' : '#ffffff'
-    const textColor = isDark ? '#cbd5e1' : '#334155'
-    const gridColor = isDark ? '#263244' : '#e2e8f0'
-    const borderColor = isDark ? '#334155' : '#cbd5e1'
-
     const chart = createChart(container, {
       width: container.clientWidth,
-      height: 460,
+      height: DEFAULT_CHART_HEIGHT,
 
-      layout: {
-        background: {
-          type: 'solid',
-          color: backgroundColor,
-        },
-        textColor,
-        fontFamily: 'Inter, system-ui, sans-serif',
-        fontSize: 12,
-      },
-
-      grid: {
-        vertLines: { color: gridColor },
-        horzLines: { color: gridColor },
-      },
-
-      rightPriceScale: {
-        borderColor,
-        autoScale: true,
-      },
-
-      timeScale: {
-        borderColor,
-        timeVisible: true,
-        secondsVisible: false,
-        rightOffset: 5,
-      },
-
-      crosshair: {
-        vertLine: {
-          color: isDark ? '#64748b' : '#94a3b8',
-          width: 1,
-          style: 2,
-          labelBackgroundColor: '#475569',
-        },
-        horzLine: {
-          color: isDark ? '#64748b' : '#94a3b8',
-          width: 1,
-          style: 2,
-          labelBackgroundColor: '#475569',
-        },
-      },
+      ...getChartTheme(true),
 
       handleScroll: {
         mouseWheel: true,
@@ -142,11 +157,11 @@ export default function PriceChart({
     candleSeriesRef.current = candleSeries
     emaSeriesRef.current = emaSeries
 
-    // Report the visible candle range to the parent component.
+    // Report the visible candle range to the parent.
     let visibleRangeTimer = null
     let lastReportedRange = null
 
-      const handleVisibleLogicalRangeChange = (range) => {
+    const handleVisibleLogicalRangeChange = (range) => {
       const nextRange = range
         ? {
             from: Math.floor(range.from),
@@ -202,9 +217,22 @@ export default function PriceChart({
       candleSeriesRef.current = null
       emaSeriesRef.current = {}
     }
+  }, [])
+
+  // Apply dark/light theme without rebuilding the chart.
+  useEffect(() => {
+    chartRef.current?.applyOptions(getChartTheme(isDark))
   }, [isDark])
 
-  // Update candles and EMA overlays when new data arrives.
+  // Update chart height when the resize control is used.
+  useEffect(() => {
+    chartRef.current?.applyOptions({
+      height: chartHeight,
+    })
+  }, [chartHeight])
+
+  // Update candles and EMA overlays when data changes.
+  // Only fit content when a new fit request is received.
   useEffect(() => {
     const candleSeries = candleSeriesRef.current
     const emaSeries = emaSeriesRef.current
@@ -247,10 +275,14 @@ export default function PriceChart({
       series.setData(lineData)
     }
 
-    if (candleData.length > 0) {
+    if (
+      candleData.length > 0 &&
+      lastFitContentKeyRef.current !== fitContentKey
+    ) {
       chart.timeScale().fitContent()
+      lastFitContentKeyRef.current = fitContentKey
     }
-  }, [data])
+  }, [data, fitContentKey])
 
   // Apply EMA visibility without rebuilding the chart.
   useEffect(() => {
@@ -272,41 +304,103 @@ export default function PriceChart({
     }))
   }
 
+  function handleResizeStart(event) {
+    event.preventDefault()
+
+    event.currentTarget.setPointerCapture(event.pointerId)
+
+    resizeStartRef.current = {
+      startY: event.clientY,
+      startHeight: chartHeight,
+    }
+  }
+
+  function handleResizeMove(event) {
+    if (!resizeStartRef.current) return
+
+    const difference = event.clientY - resizeStartRef.current.startY
+
+    const nextHeight = Math.min(
+      MAX_CHART_HEIGHT,
+      Math.max(
+        MIN_CHART_HEIGHT,
+        resizeStartRef.current.startHeight + difference,
+      ),
+    )
+
+    setChartHeight(nextHeight)
+  }
+
+  function handleResizeEnd() {
+    resizeStartRef.current = null
+  }
+
   const hasData = data.length > 0
 
+  const panelClass = isDark
+    ? 'border-slate-700/70 bg-slate-900'
+    : 'border-slate-200 bg-white'
+
+  const headingClass = isDark
+    ? 'text-slate-100'
+    : 'text-slate-900'
+
+  const mutedClass = isDark
+    ? 'text-slate-400'
+    : 'text-slate-500'
+
+  const buttonClass = isDark
+    ? 'border-slate-600 bg-slate-800 text-slate-200 hover:border-primary hover:bg-primary-soft'
+    : 'border-slate-300 bg-white text-slate-700 hover:border-primary hover:bg-primary-soft'
+
+  const dropdownClass = isDark
+    ? 'border-slate-600 bg-slate-800 text-slate-200 shadow-emerald-950/20'
+    : 'border-slate-200 bg-white text-slate-700 shadow-slate-200/60'
+
   return (
-    <section className="w-full overflow-hidden rounded-xl border border-slate-700/70 bg-slate-900 shadow-xl">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-700/70 px-4 py-3">
+    <section
+      className={`w-full overflow-hidden rounded-xl border shadow-sm ${panelClass}`}
+    >
+      <div
+        className={`flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3 ${
+          isDark ? 'border-slate-700/70' : 'border-slate-200'
+        }`}
+      >
         <div>
-          <h3 className="text-sm font-semibold text-slate-100">
+          <h3 className={`text-sm font-semibold ${headingClass}`}>
             Price Action
           </h3>
-          <p className="mt-1 text-xs text-slate-400">
-            Candlestick chart · {timeframe}
+
+          <p className={`mt-1 text-xs ${mutedClass}`}>
+            Candlestick chart Â· {timeframe}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <button
-                type="button"
-                onClick={() => chartRef.current?.timeScale().fitContent()}
-                className="rounded-md border border-slate-600 bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-200 transition hover:bg-slate-700">
-                  Reset View
+            type="button"
+            onClick={() => chartRef.current?.timeScale().fitContent()}
+            className={`rounded-md border px-3 py-1.5 text-xs font-medium transition ${buttonClass}`}
+          >
+            Reset View
           </button>
+
           <div className="relative">
             <button
               type="button"
               onClick={() => setShowMaDropdown((current) => !current)}
               aria-expanded={showMaDropdown}
-              className="flex items-center gap-2 rounded-md border border-slate-600 bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-200 transition hover:bg-slate-700"
+              className={`flex items-center gap-2 rounded-md border px-3 py-1.5 text-xs font-medium transition ${buttonClass}`}
             >
               Moving Averages
-              <span>{showMaDropdown ? '▲' : '▼'}</span>
+              <span>{showMaDropdown ? '\u25B2' : '\u25BC'}</span>
             </button>
 
             {showMaDropdown && (
-              <div className="absolute right-0 top-full z-30 mt-2 w-48 rounded-lg border border-slate-600 bg-slate-800 p-3 shadow-xl">
-                <p className="mb-2 text-xs font-semibold text-slate-300">
+              <div
+                className={`absolute right-0 top-full z-30 mt-2 w-48 rounded-lg border p-3 shadow-xl ${dropdownClass}`}
+              >
+                <p className="mb-2 text-xs font-semibold">
                   Show / Hide Averages
                 </p>
 
@@ -314,13 +408,13 @@ export default function PriceChart({
                   {EMA_OPTIONS.map((option) => (
                     <label
                       key={option.key}
-                      className="flex cursor-pointer items-center gap-2 text-xs text-slate-200"
+                      className="flex cursor-pointer items-center gap-2 text-xs"
                     >
                       <input
                         type="checkbox"
                         checked={visibility[option.key]}
                         onChange={() => toggleEma(option.key)}
-                        className="h-3.5 w-3.5 accent-blue-500"
+                        className="h-3.5 w-3.5 accent-primary"
                       />
 
                       <span
@@ -342,20 +436,28 @@ export default function PriceChart({
         <div
           ref={containerRef}
           className="w-full"
-          style={{ height: 460 }}
+          style={{ height: `${chartHeight}px` }}
         />
 
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-slate-950/70">
-            <p className="text-sm text-slate-300">
+          <div
+            className={`absolute inset-0 flex items-center justify-center ${
+              isDark ? 'bg-slate-950/70' : 'bg-white/75'
+            }`}
+          >
+            <p className={`text-sm ${mutedClass}`}>
               Loading chart data...
             </p>
           </div>
         )}
 
         {!loading && error && (
-          <div className="absolute inset-0 flex items-center justify-center bg-slate-950/80 px-6">
-            <p className="text-center text-sm text-red-400">
+          <div
+            className={`absolute inset-0 flex items-center justify-center px-6 ${
+              isDark ? 'bg-slate-950/80' : 'bg-white/90'
+            }`}
+          >
+            <p className="text-center text-sm text-red-500">
               {error}
             </p>
           </div>
@@ -363,19 +465,82 @@ export default function PriceChart({
 
         {!loading && !error && !hasData && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-sm text-slate-400">
+            <p className={`text-sm ${mutedClass}`}>
               No historical candle data available.
             </p>
           </div>
         )}
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-700/70 px-4 py-2">
-        <p className="text-xs text-slate-400">
+      {/* Adjustable chart-height handle */}
+      <div
+        role="separator"
+        aria-label="Resize price chart"
+        aria-orientation="horizontal"
+        aria-valuemin={MIN_CHART_HEIGHT}
+        aria-valuemax={MAX_CHART_HEIGHT}
+        aria-valuenow={Math.round(chartHeight)}
+        tabIndex={0}
+        onPointerDown={handleResizeStart}
+        onPointerMove={handleResizeMove}
+        onPointerUp={handleResizeEnd}
+        onPointerCancel={handleResizeEnd}
+        onDoubleClick={() => setChartHeight(DEFAULT_CHART_HEIGHT)}
+        onKeyDown={(event) => {
+          if (event.key === 'ArrowUp') {
+            event.preventDefault()
+            setChartHeight((current) =>
+              Math.min(MAX_CHART_HEIGHT, current + 25),
+            )
+          }
+
+          if (event.key === 'ArrowDown') {
+            event.preventDefault()
+            setChartHeight((current) =>
+              Math.max(MIN_CHART_HEIGHT, current - 25),
+            )
+          }
+
+          if (event.key === 'Home') {
+            event.preventDefault()
+            setChartHeight(MIN_CHART_HEIGHT)
+          }
+
+          if (event.key === 'End') {
+            event.preventDefault()
+            setChartHeight(MAX_CHART_HEIGHT)
+          }
+
+          if (event.key === 'Enter') {
+            event.preventDefault()
+            setChartHeight(DEFAULT_CHART_HEIGHT)
+          }
+        }}
+        className={`flex h-4 cursor-ns-resize touch-none items-center justify-center border-t transition-colors ${
+          isDark
+            ? 'border-slate-700 hover:bg-slate-800'
+            : 'border-slate-200 hover:bg-slate-100'
+        }`}
+        title="Drag to resize Â· Double-click to reset"
+      >
+        <div
+          className={`h-1 w-12 rounded-full ${
+            isDark ? 'bg-slate-600' : 'bg-slate-300'
+          }`}
+        />
+      </div>
+
+      <div
+        className={`flex flex-wrap items-center justify-between gap-2 border-t px-4 py-2 ${
+          isDark ? 'border-slate-700/70' : 'border-slate-200'
+        }`}
+      >
+        <p className={`text-xs ${mutedClass}`}>
           {data.length.toLocaleString()} candles
         </p>
-        <p className="text-xs text-slate-500">
-          Scroll to zoom · Drag to navigate
+
+        <p className={`text-xs ${mutedClass}`}>
+          {Math.round(chartHeight)}px Â· Scroll to zoom Â· Drag to navigate
         </p>
       </div>
     </section>

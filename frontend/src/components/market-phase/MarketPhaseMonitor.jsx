@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import {
   Activity,
   BarChart3,
@@ -28,7 +28,7 @@ const tabs = [
 ]
 
 const tabDescriptions = {
-  overview: 'Monitor current market phases across all five indices and four timeframes.',
+  overview: 'Monitor current market phases across registered market indices and four timeframes.',
   history: 'Explore historical phase distribution, phase duration and market history.',
   transitions: 'Track historical phase changes and transition patterns.',
   strength: 'Study classification scores, evidence and relative index leadership.',
@@ -47,16 +47,18 @@ function MarketPhaseMonitor({ indices = [] }) {
 
   useEffect(() => {
     if (!indexKey) {
-      setAnalysis({})
-      setLoading(false)
-      return
-    }
+    setAnalysis({})
+    setLoading(false)
+    setError(null)
+    return
+  }
 
     let cancelled = false
 
     async function loadPhaseAnalysis() {
       setLoading(true)
       setError(null)
+      setAnalysis({})
 
       try {
         const codes = indexKey.split('|')
@@ -73,6 +75,7 @@ function MarketPhaseMonitor({ indices = [] }) {
         }
       } catch (err) {
         if (!cancelled) {
+          setAnalysis({})
           setError(err.message || 'Unable to load market phase data.')
         }
       } finally {
@@ -115,7 +118,7 @@ function MarketPhaseMonitor({ indices = [] }) {
             aria-pressed={activeTab === id}
             className={`flex shrink-0 items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition ${
               activeTab === id
-                ? 'bg-blue-600 text-white'
+                ? 'bg-primary text-white'
                 : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
             }`}
           >

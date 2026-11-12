@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import {
   ArrowRight,
   Info,
@@ -97,7 +97,7 @@ const PHASE_BADGE_COLORS = {
 const PAGE_SIZE = 50
 
 function formatDate(value) {
-  if (!value) return '—'
+  if (!value) return 'â€”'
 
   const date = new Date(`${value}T00:00:00`)
 
@@ -111,7 +111,7 @@ function formatDate(value) {
 }
 
 function formatPhaseName(phase) {
-  return CLASSIFICATION_LABELS[phase] ?? phase ?? '—'
+  return CLASSIFICATION_LABELS[phase] ?? phase ?? 'â€”'
 }
 
 function getTransitionType(previousPhase, currentPhase) {
@@ -171,7 +171,7 @@ function InfoButton({ onClick, label }) {
       onClick={onClick}
       aria-label={`${label} information`}
       title={`About ${label}`}
-      className="rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-blue-500 dark:hover:bg-slate-800 dark:hover:text-blue-400"
+      className="rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-primary-hover dark:hover:bg-slate-800 dark:hover:text-primary-hover"
     >
       <Info size={16} />
     </button>
@@ -741,7 +741,7 @@ const phaseSegments = useMemo(() => {
     return (
       <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#111827]">
         <div className="flex items-center gap-3">
-          <RefreshCw size={18} className="animate-spin text-blue-500" />
+          <RefreshCw size={18} className="animate-spin text-primary" />
           <p className="text-sm text-slate-500 dark:text-slate-400">
             Loading historical phase transitions across all indices and timeframes...
           </p>
@@ -850,7 +850,7 @@ const phaseSegments = useMemo(() => {
                 onClick={() => setChartRange(range.id)}
                 className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
                   chartRange === range.id
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-primary text-white'
                     : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800'
                 }`}
               >
@@ -944,10 +944,8 @@ const phaseSegments = useMemo(() => {
                         strokeWidth={1.5}
                         style={{ cursor: 'pointer' }}
                         pointerEvents="all"
-                        onClick={(event) => {
-                          event.preventDefault()
-                          event.stopPropagation()
-                          setSelectedChartTransition({ ...transition })
+                        onClick={() => {
+                          setSelectedChartTransition(transition)
                         }}
                       />
                     )
@@ -974,16 +972,7 @@ const phaseSegments = useMemo(() => {
 
                     <button
                       type="button"
-                      onClick={(event) => {
-                      event.preventDefault()
-                      event.stopPropagation()
-
-                      console.log('TRANSITION MARKER CLICKED:', transition)
-
-                      setSelectedChartTransition({
-                        ...transition,
-                      })
-                    }}
+                      onClick={() => setSelectedChartTransition(null)}
                       className="rounded-md px-2 py-1 text-xs text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-800"
                     >
                       Clear
@@ -1168,7 +1157,7 @@ const phaseSegments = useMemo(() => {
                     {
                     label: 'Confirmed Phase Changes',
                     value: transitionSummary.confirmedPhaseChanges,
-                    color: 'text-sky-600 dark:text-sky-400',
+                    color: 'text-primary',
                     },
                     {
                     label: 'Bullish Reversals',
@@ -1188,7 +1177,7 @@ const phaseSegments = useMemo(() => {
                     {
                     label: 'Indices with Changes',
                     value: transitionSummary.uniqueIndices,
-                    color: 'text-sky-600 dark:text-sky-400',
+                    color: 'text-primary',
                     },
                 ].map((item) => (
                     <div
@@ -1292,7 +1281,7 @@ const phaseSegments = useMemo(() => {
                       </span>
                       <span className="text-xs text-slate-500 dark:text-slate-400">
                         {formatPhaseName(transition.previousPhase)}
-                        {' → '}
+                        {' â†’ '}
                         {formatPhaseName(transition.currentPhase)}
                       </span>
                     </div>
@@ -1304,7 +1293,7 @@ const phaseSegments = useMemo(() => {
             <div className="mt-5 flex flex-col gap-3 border-t border-slate-200 pt-4 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-slate-500 dark:text-slate-400">
                 Showing {filteredTransitions.length === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1}
-                {'–'}
+                {'â€“'}
                 {Math.min(currentPage * PAGE_SIZE, filteredTransitions.length)}
                 {' of '}
                 {filteredTransitions.length.toLocaleString('en-IN')} transitions
@@ -1380,7 +1369,7 @@ const phaseSegments = useMemo(() => {
             <thead>
               <tr className="border-b border-slate-200 dark:border-slate-800">
                 <th className="px-3 py-3 text-left font-semibold text-slate-600 dark:text-slate-300">
-                  Previous Phase ↓ / New Phase →
+                  Previous Phase â†“ / New Phase â†’
                 </th>
                 {PHASES.map((phase) => (
                   <th
@@ -1424,7 +1413,7 @@ const phaseSegments = useMemo(() => {
                           <span
                             className={`inline-flex min-w-9 justify-center rounded-md px-2 py-1 ${
                               count > 0
-                                ? 'bg-sky-500/10 font-semibold text-sky-600 dark:text-sky-400'
+                                ? 'bg-primary-soft font-semibold text-primary'
                                 : 'text-slate-400 dark:text-slate-600'
                             }`}
                           >

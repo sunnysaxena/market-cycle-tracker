@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import { ArrowRight, Info, RefreshCw } from 'lucide-react'
 import { getAllMarketCycles } from '../../api/client'
 import InfoPopup from './InfoPopup'
@@ -20,7 +20,7 @@ const CLASSIFICATION_LABELS = {
 }
 
 function formatDate(value) {
-  if (!value) return '—'
+  if (!value) return 'â€”'
 
   const date = new Date(`${value}T00:00:00`)
 
@@ -129,6 +129,14 @@ export default function RecentPhaseChanges({ indices = [] }) {
     [indices]
   )
 
+  const [refreshing, setRefreshing] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(0)
+
+  const handleRefresh = () => {
+    setRefreshing(true)
+    setRefreshKey((previous) => previous + 1)
+  }
+
   useEffect(() => {
     let cancelled = false
 
@@ -156,7 +164,19 @@ export default function RecentPhaseChanges({ indices = [] }) {
           })
         )
 
-        const datasets = await Promise.all(requests)
+        const results = await Promise.allSettled(requests)
+
+        const datasets = results
+          .filter((result) => result.status === 'fulfilled')
+          .map((result) => result.value)
+
+        const failedRequests = results.filter(
+          (result) => result.status === 'rejected'
+        )
+
+        if (datasets.length === 0 && failedRequests.length > 0) {
+          throw failedRequests[0].reason
+        }
 
         if (cancelled) return
 
@@ -206,25 +226,34 @@ export default function RecentPhaseChanges({ indices = [] }) {
         )
 
         if (!cancelled) {
-          setChanges(detectedChanges.slice(0, 30))
+          setChanges(detectedChanges)
+
+          if (failedRequests.length > 0) {
+            setError(
+              `${failedRequests.length} of ${requests.length} index/timeframe requests failed. Showing available results.`
+            )
+          }
         }
-      } catch (err) {
-        if (!cancelled) {
-          setError(
-            err.message || 'Unable to load historical phase changes.'
-          )
+        } catch (err) {
+          if (!cancelled) {
+            setError(
+              err.message || 'Unable to load historical phase changes.'
+            )
+          }
+        } finally {
+          if (!cancelled) {
+            setLoading(false)
+            setRefreshing(false)
+          }
         }
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
+        }
 
     loadChanges()
 
     return () => {
       cancelled = true
     }
-  }, [indexKey])
+  }, [indexKey, refreshKey])
 
   if (loading) {
     return (
@@ -236,7 +265,7 @@ export default function RecentPhaseChanges({ indices = [] }) {
     )
   }
 
-  if (error) {
+ if (error && changes.length === 0) {
     return (
       <div className="rounded-xl border border-rose-500/20 bg-rose-500/5 p-5">
         <p className="text-sm font-medium text-rose-400">
@@ -260,51 +289,66 @@ export default function RecentPhaseChanges({ indices = [] }) {
               onClick={() => setShowInfo(true)}
               aria-label="Recent Phase Changes information"
               title="About Recent Phase Changes"
-              className="rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-blue-500 dark:hover:bg-slate-800 dark:hover:text-blue-400"
+              className="rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-primary-hover dark:hover:bg-slate-800 dark:hover:text-primary-hover"
             >
               <Info size={16} />
             </button>
           </div>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Historical transitions across five indices and three timeframes
+            Historical transitions across {indices.length} registered market indices and three timeframes
           </p>
         </div>
 
-                <div className="flex flex-wrap items-center gap-3">
-          <label className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-            Index
-            <select
-              value={selectedIndex}
-              onChange={(event) => setSelectedIndex(event.target.value)}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-            >
-              <option value="ALL">All Indices</option>
-              {indices.map((index) => (
-                <option key={index.code} value={index.code}>
-                  {index.name ?? index.display_name ?? index.code}
-                </option>
-              ))}
-            </select>
-          </label>
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+              Index
+              <select
+                value={selectedIndex}
+                onChange={(event) => setSelectedIndex(event.target.value)}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-primary dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+              >
+                <option value="ALL">All Indices</option>
+                {indices.map((index) => (
+                  <option key={index.code} value={index.code}>
+                    {index.name ?? index.display_name ?? index.code}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-          <label className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-            Timeframe
-            <select
-              value={selectedTimeframe}
-              onChange={(event) => setSelectedTimeframe(event.target.value)}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-            >
-              <option value="ALL">All Timeframes</option>
-              <option value="Daily">Daily</option>
-              <option value="Weekly">Weekly</option>
-              <option value="Monthly">Monthly</option>
-            </select>
-          </label>
+            <label className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+              Timeframe
+              <select
+                value={selectedTimeframe}
+                onChange={(event) => setSelectedTimeframe(event.target.value)}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-primary dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+              >
+                <option value="ALL">All Timeframes</option>
+                <option value="Daily">Daily</option>
+                <option value="Weekly">Weekly</option>
+                <option value="Monthly">Monthly</option>
+              </select>
+            </label>
 
-          <span className="text-xs text-slate-500 dark:text-slate-400">
-            {filteredChanges.length} transitions
-          </span>
-        </div>
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              {filteredChanges.length} transitions
+            </span>
+
+            <button
+              type="button"
+              onClick={handleRefresh}
+              disabled={loading || refreshing}
+              title="Refresh phase changes"
+              aria-label="Refresh phase changes"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            >
+              <RefreshCw
+                size={15}
+                className={refreshing ? 'animate-spin' : ''}
+              />
+              Refresh
+            </button>
+          </div>
       </div>
 
       {filteredChanges.length === 0 ? (
@@ -331,7 +375,7 @@ export default function RecentPhaseChanges({ indices = [] }) {
             </thead>
 
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {filteredChanges.map((change) => (
+              {filteredChanges.slice(0, 30).map((change) => (
                 <tr
                   key={change.id}
                   className="transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/40"
@@ -349,7 +393,7 @@ export default function RecentPhaseChanges({ indices = [] }) {
                   </td>
 
                   <td className="px-5 py-4">
-                    <span className="inline-flex rounded-md border border-blue-500/20 bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-400">
+                    <span className="inline-flex rounded-md border border-primary/20 bg-primary-soft px-2 py-1 text-xs font-medium text-primary">
                       {change.transitionType}
                     </span>
                   </td>
@@ -369,7 +413,7 @@ export default function RecentPhaseChanges({ indices = [] }) {
                   </td>
 
                   <td className="px-5 py-4 text-right font-semibold tabular-nums text-slate-700 dark:text-slate-200">
-                    {change.ruleScore ?? '—'}
+                    {change.ruleScore ?? 'â€”'}
                     {change.ruleScore != null ? '/100' : ''}
                   </td>
                 </tr>
@@ -386,11 +430,11 @@ export default function RecentPhaseChanges({ indices = [] }) {
           scores, not transition probabilities.
         </p>
       </div>
-            <InfoPopup
-        open={showInfo}
-        onClose={() => setShowInfo(false)}
-        title="Understanding Recent Phase Changes"
-      >
+          <InfoPopup
+            open={showInfo}
+            onClose={() => setShowInfo(false)}
+            title="Understanding Recent Phase Changes"
+          >
         <div>
           <h4 className="mb-2 font-semibold text-slate-900 dark:text-slate-100">
             Field Information
@@ -403,7 +447,7 @@ export default function RecentPhaseChanges({ indices = [] }) {
             <li><strong>Transition Type:</strong> Category describing the movement between two consecutive phases.</li>
             <li><strong>Previous Phase:</strong> Valid classification from the preceding period.</li>
             <li><strong>New Phase:</strong> Classification detected in the current period.</li>
-            <li><strong>Rule Score:</strong> Classification score from 0–100, not a probability or prediction.</li>
+            <li><strong>Rule Score:</strong> Classification score from 0â€“100, not a probability or prediction.</li>
           </ul>
         </div>
 
@@ -413,11 +457,11 @@ export default function RecentPhaseChanges({ indices = [] }) {
           </h4>
 
           <div className="space-y-3">
-            <p><strong>Bullish Reversal:</strong> Markdown → Markup.</p>
-            <p><strong>Bearish Reversal:</strong> Markup → Markdown.</p>
-            <p><strong>Moving into Accumulation:</strong> Another valid phase → Accumulation.</p>
-            <p><strong>Moving into Distribution:</strong> Another valid phase → Distribution.</p>
-            <p><strong>Entering Sideways:</strong> Another valid phase → Sideways Consolidation.</p>
+            <p><strong>Bullish Reversal:</strong> Markdown â†’ Markup.</p>
+            <p><strong>Bearish Reversal:</strong> Markup â†’ Markdown.</p>
+            <p><strong>Moving into Accumulation:</strong> Another valid phase â†’ Accumulation.</p>
+            <p><strong>Moving into Distribution:</strong> Another valid phase â†’ Distribution.</p>
+            <p><strong>Entering Sideways:</strong> Another valid phase â†’ Sideways Consolidation.</p>
             <p><strong>Uncertain Transition:</strong> Entering or leaving Transition Uncertain.</p>
             <p><strong>Other Phase Change:</strong> Any remaining valid phase transition.</p>
           </div>

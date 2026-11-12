@@ -113,7 +113,7 @@ function IndicatorPanel({ title, subtitle, empty, children }) {
   )
 }
 
-function ChartAxes({ dataKey = 'time' }) {
+function ChartAxes({ dataKey = 'time', showYAxis = true }) {
   return (
     <>
       <CartesianGrid
@@ -133,10 +133,7 @@ function ChartAxes({ dataKey = 'time' }) {
         {...axisProps}
       />
 
-      <YAxis
-        width={52}
-        {...axisProps}
-      />
+      {showYAxis && <YAxis {...axisProps} />}
 
       <Tooltip {...tooltipStyle} />
     </>
@@ -246,8 +243,8 @@ export default function TechnicalIndicatorCharts({
                 transition-colors
                 ${
                   activeGroup === id
-                    ? 'bg-sky-600 text-white shadow-sm'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                    ? 'bg-primary text-white shadow-sm dark:text-slate-950'
+                    : 'bg-slate-100 text-slate-700 hover:bg-primary-soft hover:text-primary dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-primary-soft dark:hover:text-primary'
                 }
               `}
             >
@@ -268,11 +265,11 @@ export default function TechnicalIndicatorCharts({
             empty={!hasValue('rsi14')}
           >
             <LineChart data={displayData} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
-              <ChartAxes />
+              <ChartAxes showYAxis={false} />
               <YAxis domain={[0, 100]} width={42} {...axisProps} />
               <ReferenceLine y={70} stroke="#ef4444" strokeDasharray="5 4" />
               <ReferenceLine y={30} stroke="#22c55e" strokeDasharray="5 4" />
-              <Line type="monotone" dataKey="rsi14" name="RSI 14" stroke="#0ea5e9" dot={false} strokeWidth={2} connectNulls={false} isAnimationActive={false} />
+              <Line type="monotone" dataKey="rsi14" name="RSI 14" stroke="#10b981" dot={false} strokeWidth={2} connectNulls={false} isAnimationActive={false} />
             </LineChart>
           </IndicatorPanel>
 
@@ -378,7 +375,7 @@ export default function TechnicalIndicatorCharts({
           empty={!hasValue('chop14')}
         >
           <LineChart data={displayData} margin={{ top: 8, right: 12, bottom: 4, left: 0 }}>
-            <ChartAxes />
+            <ChartAxes showYAxis={false} />
             <YAxis domain={[0, 100]} width={42} {...axisProps} />
             <ReferenceLine y={61.8} stroke="#ef4444" strokeDasharray="5 4" />
             <ReferenceLine y={38.2} stroke="#22c55e" strokeDasharray="5 4" />

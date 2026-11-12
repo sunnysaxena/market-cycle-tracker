@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+﻿import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import {
   Activity, BarChart3, CandlestickChart, Clock,
   Database, LayoutDashboard, Menu, Moon, Settings,
@@ -48,7 +48,7 @@ const timeframeLabels = {
 }
 
 function formatPrice(value) {
-  if (value === null || value === undefined) return '—'
+  if (value === null || value === undefined) return 'â€”'
 
   return new Intl.NumberFormat('en-IN', {
     maximumFractionDigits: 2,
@@ -57,7 +57,7 @@ function formatPrice(value) {
 }
 
 function formatDate(value) {
-  if (!value) return '—'
+  if (!value) return 'â€”'
 
   return new Date(`${value}T00:00:00`).toLocaleDateString('en-IN', {
     day: '2-digit',
@@ -291,7 +291,7 @@ function App() {
               >
               <div className="mb-10">
                 <div className="flex items-center gap-3">
-                  <div className="rounded-xl bg-blue-600 p-2 text-white">
+                  <div className="rounded-xl bg-primary p-2 text-white">
                     <Activity size={23} />
                   </div>
                   <div>
@@ -318,7 +318,7 @@ function App() {
                     }}
                     className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm transition ${
                       activePage === name
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-primary text-white'
                         : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
                     }`}
                   >
@@ -391,6 +391,7 @@ function App() {
                     analysis={selectedAnalysis?.timeframes ? selectedAnalysis : null}
                     loading={loadingIndices || loadingAnalysis}
                     error={selectedAnalysis?.error || apiError}
+                    isDark={dark}
                   />
                 </Suspense>
                 ) : activePage === 'Market Phase Monitor' ? (
@@ -408,7 +409,7 @@ function App() {
               <div className="mb-6">
                 <h2 className="text-2xl font-bold">Market Overview</h2>
                 <p className="mt-1 text-sm text-slate-500">
-                    Track every phase of the Indian market cycle — Accumulation, Markup,
+                    Track every phase of the Indian market cycle â€” Accumulation, Markup,
                     Distribution, Markdown, Sideways Consolidation and Transition.
                     Analyze market structure, technical indicators and volatility
                     across daily, weekly, monthly and yearly timeframes.
@@ -449,16 +450,16 @@ function App() {
                       onClick={() => setSelectedInstrument(item.code)}
                       className={`rounded-xl border p-5 text-left transition ${
                         isSelected
-                          ? 'border-blue-500 ring-1 ring-blue-500'
+                          ? 'border-primary ring-1 ring-primary'
                           : 'border-slate-200 dark:border-slate-800'
-                      } bg-white hover:border-blue-400 dark:bg-[#111827]`}
+                      } bg-white hover:border-primary-hover dark:bg-[#111827]`}
                     >
                       <div className="flex items-center justify-between gap-2">
                         <p className="text-sm font-medium text-slate-500">
                           {item.name}
                         </p>
                         {isSelected && (
-                          <span className="rounded-md bg-blue-100 px-2 py-1 text-xs text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                          <span className="rounded-md bg-primary-soft px-2 py-1 text-xs text-primary dark:bg-primary-soft dark:text-primary">
                             Selected
                           </span>
                         )}
@@ -471,7 +472,7 @@ function App() {
                             ? 'Unavailable'
                             : loadingAnalysis
                               ? 'Loading...'
-                              : '—'}
+                              : 'â€”'}
                       </p>
 
                       <p className="mt-1 text-xs text-slate-400">
@@ -617,7 +618,7 @@ function App() {
                       return (
                         <div
                           key={item.code}
-                          className="rounded-xl border border-slate-200 bg-white p-4 transition hover:border-blue-400 dark:border-slate-800 dark:bg-[#111827] sm:p-5"
+                          className="rounded-xl border border-slate-200 bg-white p-4 transition hover:border-primary-hover dark:border-slate-800 dark:bg-[#111827] sm:p-5"
                         >
                           {item.code === 'INDIA_VIX' && indiaVixData.loading ? (
                             <p className="text-sm text-slate-500">
@@ -664,7 +665,7 @@ function App() {
                                   <p className={`mt-1 text-lg font-semibold tabular-nums ${changeColor}`}>
                                     {change !== null
                                       ? `${change > 0 ? '+' : ''}${formatPrice(change)}`
-                                      : '—'}
+                                      : 'â€”'}
                                   </p>
                                   <p className={`text-xs font-medium ${changeColor}`}>
                                     {changePercent !== null
@@ -857,7 +858,7 @@ function App() {
 
                               {/* Expandable details */}
                               <details className="mt-4 border-t border-slate-100 pt-3 dark:border-slate-800">
-                                <summary className="cursor-pointer text-xs font-medium text-slate-500 transition hover:text-blue-500">
+                                <summary className="cursor-pointer text-xs font-medium text-slate-500 transition hover:text-primary-hover">
                                   View additional details
                                 </summary>
 
@@ -869,7 +870,7 @@ function App() {
                                     <p className="mt-1 text-sm font-medium tabular-nums">
                                       {previousClose !== null
                                         ? formatPrice(previousClose)
-                                        : '—'}
+                                        : 'â€”'}
                                     </p>
                                   </div>
 
@@ -880,7 +881,7 @@ function App() {
                                     <p className="mt-1 text-sm font-medium">
                                       {latest.candle_date
                                         ? formatDate(latest.candle_date)
-                                        : '—'}
+                                        : 'â€”'}
                                     </p>
                                   </div>
 
@@ -1046,7 +1047,7 @@ function App() {
               </div>
 
               <p className="mt-8 text-center text-xs text-slate-500">
-                Market Cycle Tracker V1.2 · Local-first application · No live trading
+                Market Cycle Tracker V1.2 Â· Local-first application Â· No live trading
               </p>
 
                 </>

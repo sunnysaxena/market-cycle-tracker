@@ -1,7 +1,8 @@
 
 import { useEffect, useMemo, useState } from 'react'
-import { FlaskConical, RefreshCw } from 'lucide-react'
+import { FlaskConical, Info, RefreshCw } from 'lucide-react'
 import CustomDatePicker from '../CustomDatePicker'
+import InfoPopup from './InfoPopup'
 import { getForwardReturnsByPhase } from '../../api/client'
 
 const TIMEFRAMES = [
@@ -121,6 +122,8 @@ export default function ResearchLab({ indices = [] }) {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [refreshKey, setRefreshKey] = useState(0)
+  const [showReturnsInfo, setShowReturnsInfo] = useState(false)
 
   useEffect(() => {
     if (!marketIndices.length) {
@@ -140,11 +143,14 @@ export default function ResearchLab({ indices = [] }) {
   useEffect(() => {
     if (!selectedIndex) {
       setData(null)
+      setLoading(false)
+      setError('')
       return
     }
 
     if (startDate && endDate && startDate > endDate) {
       setData(null)
+      setLoading(false)
       setError('Start date cannot be later than end date.')
       return
     }
@@ -154,6 +160,7 @@ export default function ResearchLab({ indices = [] }) {
     async function loadResearch() {
       setLoading(true)
       setError('')
+      setData(null)
 
       try {
         const result = await getForwardReturnsByPhase(selectedIndex, {
@@ -184,7 +191,7 @@ export default function ResearchLab({ indices = [] }) {
     return () => {
       cancelled = true
     }
-  }, [selectedIndex, timeframe, startDate, endDate])
+  }, [selectedIndex, timeframe, startDate, endDate, refreshKey])
 
   const batchId = data?.batch?.import_batch_id
   const phases = data?.phases ?? []
@@ -226,11 +233,7 @@ export default function ResearchLab({ indices = [] }) {
 
         <button
           type="button"
-          onClick={() => {
-            setData(null)
-            setError('')
-            setTimeframe((current) => current)
-          }}
+          onClick={() => setRefreshKey((current) => current + 1)}
           disabled={loading}
           className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
         >
@@ -315,7 +318,7 @@ export default function ResearchLab({ indices = [] }) {
       </div>
 
       {/* Explanation */}
-      <div className="rounded-lg border border-sky-200 bg-sky-50 p-3 text-sm text-sky-800 dark:border-sky-900/60 dark:bg-sky-950/30 dark:text-sky-200">
+      <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-200">
         Returns shown are for the underlying index, not CE/PE option premiums.
         Each horizon measures the close-to-close return after the selected
         phase-classification candle, using subsequent eligible candles of the
@@ -358,14 +361,94 @@ export default function ResearchLab({ indices = [] }) {
       {/* Results table */}
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <div className="flex flex-col gap-1 border-b border-slate-200 px-4 py-4 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
-          <div>
+        <div>
+          <div className="flex items-center gap-2">
             <h3 className="font-semibold text-slate-900 dark:text-slate-100">
               Forward Returns by Market Phase
             </h3>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              Average, median and positive-return percentage for each horizon.
-            </p>
+
+            <button
+              type="button"
+              onClick={() => setShowReturnsInfo(true)}
+              aria-label="Forward returns methodology information"
+              className="rounded-full text-slate-400 transition hover:text-violet-500"
+            >
+              <Info size={16} />
+            </button>
+
+            <InfoPopup
+              title="Forward Returns by Market Phase"
+              open={showReturnsInfo}
+              onClose={() => setShowReturnsInfo(false)}
+            >
+              <div className="space-y-3">
+                <p>
+                  This analysis measures how the selected index performed after
+                  historical market-phase classifications. It helps compare
+                  subsequent price behaviour across different market phases.
+                </p>
+
+                <div>
+                  <p className="font-semibold text-slate-800 dark:text-slate-100">
+                    Return calculation
+                  </p>
+                  <p>
+                    Forward return is calculated as the percentage change between
+                    the closing price of the starting classification candle and
+                    the closing price of a future eligible candle.
+                  </p>
+                  <p className="mt-1">
+                    Return (%) = (Future Close / Starting Close − 1) × 100
+                  </p>
+                </div>
+
+                <div>
+                  <p className="font-semibold text-slate-800 dark:text-slate-100">
+                    Forward horizons
+                  </p>
+                  <p>
+                    The 1, 5, 10 and 20 horizons represent subsequent eligible
+                    candles in the selected timeframe, not calendar days.
+                  </p>
+                  <p className="mt-1">
+                    For example, a 5-candle horizon on the Weekly timeframe
+                    measures the return after five subsequent eligible weekly
+                    candles.
+                  </p>
+                </div>
+
+                <div>
+                  <p className="font-semibold text-slate-800 dark:text-slate-100">
+                    Performance metrics
+                  </p>
+                  <ul className="list-disc space-y-1 pl-5">
+                    <li><strong>Average Return:</strong> Arithmetic mean of observed forward returns.</li>
+                    <li><strong>Median Return:</strong> Middle observed return.</li>
+                    <li><strong>Positive Return:</strong> Percentage of observations with returns greater than zero.</li>
+                    <li><strong>Samples:</strong> Number of available observations used for that horizon.</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <p className="font-semibold text-slate-800 dark:text-slate-100">
+                    Important limitations
+                  </p>
+                  <ul className="list-disc space-y-1 pl-5">
+                    <li>Date filters apply to starting classification candles; future closing candles may fall outside the selected date range.</li>
+                    <li>Observations without sufficient future price data are excluded from that horizon.</li>
+                    <li>INSUFFICIENT_DATA classifications are excluded from phase return calculations.</li>
+                    <li>These are historical underlying-index returns, not CE/PE option premium returns.</li>
+                    <li>Historical results do not guarantee future performance.</li>
+                  </ul>
+                </div>
+              </div>
+            </InfoPopup>
           </div>
+
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            Average, median and positive-return percentage for each horizon.
+          </p>
+        </div>
           {loading && (
             <span className="text-xs text-violet-500">Loading research data…</span>
           )}

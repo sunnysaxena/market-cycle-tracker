@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Info } from 'lucide-react'
 import InfoPopup from './InfoPopup'
 
@@ -52,16 +52,23 @@ function calculateSynchronization(indices, analysis, timeframe) {
     .sort((a, b) => b[1] - a[1])
 
   const classified = entries.reduce((total, entry) => total + entry[1], 0)
-  const dominant = entries[0] ?? null
+  const dominantCount = entries[0]?.[1] ?? 0
+
+  const dominantPhases =
+    dominantCount > 0
+      ? entries
+          .filter(([, count]) => count === dominantCount)
+          .map(([phase]) => phase)
+      : []
 
   return {
     counts,
     classified,
     insufficient: indices.length - classified,
-    dominantPhase: dominant?.[0] ?? null,
-    dominantCount: dominant?.[1] ?? 0,
+    dominantPhases,
+    dominantCount,
     percentage: classified
-      ? Math.round((dominant[1] / classified) * 100)
+      ? Math.round((dominantCount / classified) * 100)
       : 0,
     dispersion: entries.length,
   }
@@ -91,6 +98,12 @@ function PhaseSynchronization({ indices = [], analysis = {} }) {
       aligned:
         validPhases.length === timeframes.length &&
         distinctPhases.size === 1,
+      status:
+        validPhases.length !== timeframes.length
+          ? 'Insufficient data'
+          : distinctPhases.size === 1
+            ? 'Aligned'
+            : 'Different phases',
       classified: validPhases.length,
     }
   })
@@ -108,15 +121,14 @@ function PhaseSynchronization({ indices = [], analysis = {} }) {
             onClick={() => setShowSyncInfo(true)}
             aria-label="Market Synchronization information"
             title="About Market Synchronization"
-            className="rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-blue-500 dark:hover:bg-slate-800"
+            className="rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-primary-hover dark:hover:bg-slate-800"
           >
             <Info size={16} />
           </button>
         </div>
 
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Measures how consistently the five indices share the same
-          classification across timeframes
+          Measures how consistently the {indices.length} registered market indices share the same classification across timeframes
         </p>
       </div>
 
@@ -154,12 +166,16 @@ function PhaseSynchronization({ indices = [], analysis = {} }) {
               <div className="flex justify-between gap-2">
                 <span className="text-slate-500">Dominant phase</span>
                 <span className="font-medium text-right">
-                  {phaseLabels[summary.dominantPhase] ?? 'Unavailable'}
+                  {summary.dominantPhases.length > 0
+                    ? summary.dominantPhases
+                        .map((phase) => phaseLabels[phase] ?? phase)
+                        .join(', ')
+                    : 'Unavailable'}
                 </span>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-slate-500">Matching indices</span>
+                <span className="text-slate-500">Indices per leading phase</span>
                 <span className="font-medium">
                   {summary.dominantCount}
                 </span>
@@ -195,7 +211,7 @@ function PhaseSynchronization({ indices = [], analysis = {} }) {
               onClick={() => setShowAlignmentInfo(true)}
               aria-label="Cross-Timeframe Alignment information"
               title="About Cross-Timeframe Alignment"
-              className="rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-blue-500 dark:hover:bg-slate-800"
+              className="rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-primary-hover dark:hover:bg-slate-800"
             >
               <Info size={16} />
             </button>
@@ -255,12 +271,14 @@ function PhaseSynchronization({ indices = [], analysis = {} }) {
                 <td className="px-4 py-4">
                   <span
                     className={`rounded-lg px-2.5 py-1 text-xs font-medium ${
-                      row.aligned
+                      row.status === 'Aligned'
                         ? 'bg-green-500/10 text-green-600 dark:text-green-400'
-                        : 'bg-slate-500/10 text-slate-500'
+                        : row.status === 'Different phases'
+                          ? 'bg-orange-500/10 text-orange-600 dark:text-orange-400'
+                          : 'bg-slate-500/10 text-slate-500'
                     }`}
                   >
-                    {row.aligned ? 'Aligned' : 'Not aligned'}
+                    {row.status}
                   </span>
                 </td>
               </tr>
@@ -273,9 +291,9 @@ function PhaseSynchronization({ indices = [], analysis = {} }) {
         Synchronization measures agreement on the most common classification;
         it does not indicate bullish or bearish direction. Alignment requires
         valid and identical classifications across all three timeframes.
-        Insufficient-data records are excluded from these calculations.
+        Insufficient-data records are excluded from synchronization percentages
+        and shown separately in the alignment table.
       </p>
-
 
       <InfoPopup
         open={showSyncInfo}
@@ -298,9 +316,10 @@ function PhaseSynchronization({ indices = [], analysis = {} }) {
             Dominant Phase
           </h4>
           <p>
-            The phase with the highest number of classified indices. It is
-            the largest group, not necessarily a majority.
-          </p>
+            The phase or phases with the highest number of classified indices.
+            When multiple phases share the highest count, they are displayed
+            as tied leading phases. The leading group is not necessarily a majority.
+        </p>
         </div>
 
         <div>
@@ -308,9 +327,12 @@ function PhaseSynchronization({ indices = [], analysis = {} }) {
             Synchronization Percentage
           </h4>
           <p>
-            Calculated as matching indices in the dominant phase divided by
-            all classified indices, multiplied by 100. Insufficient-data
-            indices are excluded from this calculation.
+            <p>
+              Calculated as the number of indices in any one leading phase divided
+              by all classified indices, multiplied by 100. If multiple phases tie,
+              the percentage represents each tied phase separately. Insufficient-data
+              indices are excluded from this calculation.
+            </p>
           </p>
         </div>
 
@@ -368,9 +390,10 @@ function PhaseSynchronization({ indices = [], analysis = {} }) {
             Not Aligned
           </h4>
           <p>
-            The current implementation displays Not aligned if classifications
-            differ or if one or more timeframes have insufficient data.
-            These are two different situations.
+            The table distinguishes two situations:
+            Different phases means all three timeframes have valid classifications
+            but they disagree. Insufficient data means one or more timeframes
+            lack a valid classification.
           </p>
         </div>
 

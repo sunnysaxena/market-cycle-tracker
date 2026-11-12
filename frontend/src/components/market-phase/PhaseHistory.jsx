@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import { Info, RefreshCw } from 'lucide-react'
 import { getAllMarketCycles } from '../../api/client'
 import InfoPopup from './InfoPopup'
@@ -46,13 +46,37 @@ function formatPhaseName(phase) {
 }
 
 function formatDate(date) {
-  if (!date) return '—'
+  if (!date) return 'â€”'
 
   return new Date(`${date}T00:00:00`).toLocaleDateString('en-IN', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
   })
+}
+
+function getNextExpectedPeriodStart(value, timeframe) {
+  if (!value) return null
+
+  const [year, month, day] = value.split('-').map(Number)
+
+  if (!year || !month || !day) return null
+
+  const date = new Date(Date.UTC(year, month - 1, day))
+
+  if (timeframe === '1W') {
+    date.setUTCDate(date.getUTCDate() + 7)
+  } else if (timeframe === '1M') {
+    date.setUTCDate(1)
+    date.setUTCMonth(date.getUTCMonth() + 1)
+  } else if (timeframe === '1Y') {
+    date.setUTCMonth(0, 1)
+    date.setUTCFullYear(date.getUTCFullYear() + 1)
+  } else {
+    return null
+  }
+
+  return date.toISOString().slice(0, 10)
 }
 
 export default function PhaseHistory({ indices = [] }) {
@@ -268,13 +292,7 @@ useEffect(() => {
 
   const durationStats = useMemo(() => {
     const stats = []
-
-    const selectedIndices =
-      selectedIndex === 'ALL'
-        ? indices
-        : indices.filter((index) => index.code === selectedIndex)
-
-    selectedIndices.forEach((index) => {
+    indices.forEach((index) => {
       TIMEFRAMES.forEach((timeframe) => {
         const records = [
           ...(history[`${index.code}_${timeframe.id}`] ?? []),
@@ -284,13 +302,27 @@ useEffect(() => {
 
         const groups = []
         let currentGroup = null
+        let previousRecord = null
 
         records.forEach((record) => {
           const phase = getValidPhase(record.cycle_classification)
 
-          // An explicit insufficient-data record breaks continuity.
-          if (!phase) {
+          // Detect missing aggregate periods using backend timeframe rules.
+          const hasMissingPeriod =
+            timeframe.id !== '1D' &&
+            previousRecord &&
+            getNextExpectedPeriodStart(
+              previousRecord.period_start,
+              timeframe.id
+            ) !== record.period_start
+
+          // Insufficient data and missing periods both break continuity.
+          if (!phase || hasMissingPeriod) {
             currentGroup = null
+          }
+
+          if (!phase) {
+            previousRecord = record
             return
           }
 
@@ -307,6 +339,8 @@ useEffect(() => {
 
             groups.push(currentGroup)
           }
+
+          previousRecord = record
         })
 
         const phaseGroups = PHASES
@@ -347,7 +381,7 @@ useEffect(() => {
     })
 
     return stats
-  }, [history, indices, selectedIndex])
+  }, [history, indices])
 
 
 
@@ -404,6 +438,12 @@ useEffect(() => {
     1,
     Math.ceil(individualHistory.length / individualPageSize)
   )
+
+  useEffect(() => {
+    setIndividualPage((currentPage) =>
+      Math.min(currentPage, individualTotalPages)
+    )
+  }, [individualTotalPages])
 
   const individualPageRecords = individualHistory.slice(
     (individualPage - 1) * individualPageSize,
@@ -478,7 +518,7 @@ useEffect(() => {
                 onClick={() => setShowDistributionInfo(true)}
                 aria-label="Historical Phase Distribution information"
                 title="About Historical Phase Distribution"
-                className="rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-blue-500 dark:hover:bg-slate-800 dark:hover:text-blue-400"
+                className="rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-primary-hover dark:hover:bg-slate-800 dark:hover:text-primary-hover"
               >
                 <Info size={16} />
               </button>
@@ -684,13 +724,16 @@ useEffect(() => {
             <div className="flex items-center gap-1">
               <button
                 type="button"
-                onClick={() =>
-                  setCalendarMonth((month) => (month + 11) % 12)
-                }
+                disabled={calendarYear === 2010 && calendarMonth === 0}
+                onClick={() => {
+                  const previousMonth = new Date(calendarYear, calendarMonth - 1, 1)
+                  setCalendarYear(previousMonth.getFullYear())
+                  setCalendarMonth(previousMonth.getMonth())
+                }}
                 className="rounded-md border border-slate-300 px-2 py-2 text-sm dark:border-slate-700"
                 aria-label="Previous month"
               >
-                ←
+                â†
               </button>
 
               <span className="min-w-24 text-center text-sm font-medium text-slate-800 dark:text-slate-200">
@@ -702,13 +745,19 @@ useEffect(() => {
 
               <button
                 type="button"
-                onClick={() =>
-                  setCalendarMonth((month) => (month + 1) % 12)
+                disabled={
+                  calendarYear === new Date().getFullYear() &&
+                  calendarMonth === new Date().getMonth()
                 }
+                onClick={() => {
+                  const nextMonth = new Date(calendarYear, calendarMonth + 1, 1)
+                  setCalendarYear(nextMonth.getFullYear())
+                  setCalendarMonth(nextMonth.getMonth())
+                }}
                 className="rounded-md border border-slate-300 px-2 py-2 text-sm dark:border-slate-700"
                 aria-label="Next month"
               >
-                →
+                â†’
               </button>
             </div>
           </div>
@@ -884,7 +933,7 @@ useEffect(() => {
                 {item.averageDuration.toFixed(1)}
               </p>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Average duration · {item.periods} observed periods
+                Average duration Â· {item.periods} observed episodes
               </p>
             </div>
           ))}
@@ -896,7 +945,7 @@ useEffect(() => {
               <tr>
                 <th className="px-4 py-3">Index</th>
                 <th className="px-4 py-3">Market Phase</th>
-                <th className="px-4 py-3 text-right">Periods</th>
+                <th className="px-4 py-3 text-right">Episodes</th>
                 <th className="px-4 py-3 text-right">Average</th>
                 <th className="px-4 py-3 text-right">Shortest</th>
                 <th className="px-4 py-3 text-right">Longest</th>
@@ -951,9 +1000,8 @@ useEffect(() => {
 
         <div className="p-4">
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Daily duration is measured in calendar days. Weekly, Monthly and
-            Yearly duration is measured in stored classified candles.
-            Statistics describe completed observed phase periods.
+            Daily duration is measured in classified trading sessions (daily candles).
+            Weekly, Monthly and Yearly duration is measured in stored classified candles.
           </p>
         </div>
 
@@ -968,8 +1016,9 @@ useEffect(() => {
           </p>
           <p>
             Average, shortest and longest durations are calculated from
-            observed periods. Daily duration uses calendar days; other
-            timeframes use classified candles.
+            observed periods. All timeframes measure duration in stored classified
+            candles: Daily uses trading sessions, while Weekly, Monthly and Yearly
+            use their respective timeframe candles.
           </p>
           <p>
             INSUFFICIENT_DATA records are excluded. Missing records can affect
@@ -1078,18 +1127,18 @@ useEffect(() => {
                     <td className="px-4 py-3 tabular-nums">
                       {record.rule_score != null && Number.isFinite(score)
                         ? score.toFixed(1)
-                        : '—'}
+                        : 'â€”'}
                     </td>
                     <td className="px-4 py-3">
                       {record.classification_basis
                         ? formatPhaseName(record.classification_basis)
-                        : '—'}
+                        : 'â€”'}
                     </td>
                     <td
                       className="max-w-[220px] truncate px-4 py-3 text-xs"
                       title={record.calculation_version ?? ''}
                     >
-                      {record.calculation_version ?? '—'}
+                      {record.calculation_version ?? 'â€”'}
                     </td>
                   </tr>
                 )
@@ -1113,7 +1162,7 @@ useEffect(() => {
           <p className="text-xs text-slate-500 dark:text-slate-400">
             {individualHistory.length === 0
               ? 'No records'
-              : `Showing ${(individualPage - 1) * individualPageSize + 1}–${Math.min(individualPage * individualPageSize, individualHistory.length)} of ${individualHistory.length} records`}
+              : `Showing ${(individualPage - 1) * individualPageSize + 1}â€“${Math.min(individualPage * individualPageSize, individualHistory.length)} of ${individualHistory.length} records`}
           </p>
 
           <div className="flex items-center gap-2">

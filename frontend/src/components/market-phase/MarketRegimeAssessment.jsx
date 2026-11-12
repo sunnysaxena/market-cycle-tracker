@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Info } from 'lucide-react'
 import InfoPopup from './InfoPopup'
 
@@ -6,7 +6,7 @@ const phases = [
   {
     id: 'ACCUMULATION',
     label: 'Accumulation',
-    color: 'bg-blue-500',
+    color: 'bg-blue-500/10',
     text: 'text-blue-600 dark:text-blue-400',
   },
   {
@@ -210,7 +210,7 @@ function MarketRegimeAssessment({ indices = [], analysis = {} }) {
                     onClick={() => setShowInfo(true)}
                     aria-label="Market Regime Assessment information"
                     title="About Market Regime Assessment"
-                    className="rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-blue-500 dark:hover:bg-slate-800"
+                    className="rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-primary-hover dark:hover:bg-slate-800"
                     >
                     <Info size={16} />
                     </button>
@@ -247,7 +247,7 @@ function MarketRegimeAssessment({ indices = [], analysis = {} }) {
                 {synchronizationLabel}
                 </p>
                 <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                {weeklyAgreement}/{weeklyComparable} Daily–Weekly matches
+                {weeklyAgreement}/{weeklyComparable} Dailyâ€“Weekly matches
                 </p>
             </div>
             </div>
@@ -262,7 +262,7 @@ function MarketRegimeAssessment({ indices = [], analysis = {} }) {
             />
 
             <MetricCard
-            label="Daily–Weekly Agreement"
+            label="Dailyâ€“Weekly Agreement"
             value={`${weeklyAgreement} / ${weeklyComparable}`}
             description="Indices with matching valid Daily and Weekly phases"
             />
@@ -392,7 +392,7 @@ function MarketRegimeAssessment({ indices = [], analysis = {} }) {
             {interpretation}
           </p>
           <p className="mt-2 text-xs text-slate-500 dark:text-slate-500">
-            Daily–Weekly agreement:{' '}
+            Dailyâ€“Weekly agreement:{' '}
             {weeklyComparable > 0
               ? `${((weeklyAgreement / weeklyComparable) * 100).toFixed(1)}% of comparable indices`
               : 'No comparable classifications available'}
@@ -431,7 +431,7 @@ function MarketRegimeAssessment({ indices = [], analysis = {} }) {
 
           <div>
             <h4 className="font-semibold text-slate-900 dark:text-slate-100">
-              Daily–Weekly Agreement
+              Dailyâ€“Weekly Agreement
             </h4>
             <p>
               Measures how many indices have matching valid Daily and Weekly

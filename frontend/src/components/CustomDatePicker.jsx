@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useId, useRef, useState } from 'react'
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react'
 
 function toISODate(date) {
@@ -47,6 +47,9 @@ export default function CustomDatePicker({
   value,
   onChange,
 }) {
+  const calendarId = useId()
+  const containerRef = useRef(null)
+  const calendarButtonRef = useRef(null)
   const [isOpen, setIsOpen] = useState(false)
   const [inputValue, setInputValue] = useState(formatDisplayDate(value))
   const [visibleMonth, setVisibleMonth] = useState(() => {
@@ -66,6 +69,32 @@ export default function CustomDatePicker({
       setVisibleMonth(new Date(year, month - 1, day))
     }
   }, [value])
+
+  useEffect(() => {
+  if (!isOpen) return
+
+  const handlePointerDown = (event) => {
+    if (!containerRef.current?.contains(event.target)) {
+      setIsOpen(false)
+    }
+  }
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      setIsOpen(false)
+      calendarButtonRef.current?.focus()
+    }
+  }
+
+  document.addEventListener('pointerdown', handlePointerDown)
+  document.addEventListener('keydown', handleKeyDown)
+
+  return () => {
+    document.removeEventListener('pointerdown', handlePointerDown)
+    document.removeEventListener('keydown', handleKeyDown)
+  }
+}, [isOpen])
 
   const year = visibleMonth.getFullYear()
   const month = visibleMonth.getMonth()
@@ -111,7 +140,7 @@ export default function CustomDatePicker({
   }
 
   return (
-    <div className="relative">
+    <div ref={containerRef} className="relative">
       {label && (
         <label
           htmlFor={id}
@@ -143,15 +172,18 @@ export default function CustomDatePicker({
               setIsOpen(false)
             }
           }}
-          className="h-10 w-full rounded-lg border border-slate-300 bg-white pl-3 pr-12 text-sm font-medium text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+          className="h-10 w-full rounded-lg border border-slate-300 bg-white pl-3 pr-12 text-sm font-medium text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
         />
 
         <button
+          ref={calendarButtonRef}
           type="button"
-          onClick={() => setIsOpen((current) => !current)}
+          onClick={() => setIsOpen(current => !current)}
           aria-label={`Open ${label || 'date'} calendar`}
           aria-expanded={isOpen}
-          className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-slate-500 transition-colors hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400"
+          aria-controls={calendarId}
+          aria-haspopup="dialog"
+          className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-slate-500 transition-colors hover:text-primary dark:text-slate-400 dark:hover:text-primary-hover"
         >
           <CalendarDays size={16} />
         </button>
@@ -159,7 +191,12 @@ export default function CustomDatePicker({
 
       {/* Calendar Popup */}
       {isOpen && (
-        <div className="absolute left-0 top-full z-50 mt-2 w-72 rounded-xl border border-slate-200 bg-white p-3 shadow-xl dark:border-slate-700 dark:bg-slate-900">
+        <div
+          id={calendarId}
+          role="dialog"
+          aria-label={`${label || 'Date'} calendar`}
+          className="absolute left-0 top-full z-50 mt-2 w-72 rounded-xl border border-slate-200 bg-white p-3 shadow-xl dark:border-slate-700 dark:bg-slate-900"
+        >
 
           {/* Calendar Header */}
           <div className="mb-3 flex items-center justify-between">
@@ -219,9 +256,9 @@ export default function CustomDatePicker({
                     aria-pressed={isSelected}
                     className={`mx-auto flex h-8 w-8 items-center justify-center rounded-md text-xs transition-colors ${
                       isSelected
-                        ? 'bg-blue-600 font-semibold text-white'
+                        ? 'bg-primary font-semibold text-white'
                         : isToday
-                          ? 'border border-blue-500 font-semibold text-blue-600 dark:text-blue-400'
+                          ? 'border border-primary font-semibold text-primary dark:text-primary'
                           : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
                     }`}
                   >
@@ -257,7 +294,7 @@ export default function CustomDatePicker({
                 setVisibleMonth(today)
                 setIsOpen(false)
               }}
-              className="text-xs font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400"
+              className="text-xs font-medium text-primary hover:text-primary-hover dark:text-primary"
             >
               Today
             </button>

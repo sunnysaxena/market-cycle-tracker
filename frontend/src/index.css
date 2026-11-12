@@ -1,8 +1,27 @@
-
 @import "tailwindcss";
 
 /* Enable class-based dark mode */
 @custom-variant dark (&:where(.dark, .dark *));
+
+/* Application accent theme: Graphite + Emerald */
+:root {
+  --app-primary: #059669;
+  --app-primary-hover: #047857;
+  --app-primary-soft: #d1fae5;
+}
+
+.dark {
+  --app-primary: #10b981;
+  --app-primary-hover: #34d399;
+  --app-primary-soft: rgba(16, 185, 129, 0.14);
+}
+
+/* Tailwind semantic colour utilities */
+@theme inline {
+  --color-primary: var(--app-primary);
+  --color-primary-hover: var(--app-primary-hover);
+  --color-primary-soft: var(--app-primary-soft);
+}
 
 /* Global reset */
 * {

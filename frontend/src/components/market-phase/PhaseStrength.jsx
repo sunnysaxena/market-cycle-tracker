@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Info } from 'lucide-react'
 import InfoPopup from './InfoPopup'
 
@@ -219,7 +219,7 @@ function PhaseStrength({ indices = [], analysis = {}, loading, error }) {
               <select
                 value={activeCode ?? ''}
                 onChange={(event) => setSelectedIndex(event.target.value)}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#0b1220] dark:text-slate-100"
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-primary dark:border-slate-700 dark:bg-[#0b1220] dark:text-slate-100"
               >
                 {indices.map((index) => (
                   <option key={index.code} value={index.code}>
@@ -237,7 +237,7 @@ function PhaseStrength({ indices = [], analysis = {}, loading, error }) {
               <select
                 value={selectedTimeframe}
                 onChange={(event) => setSelectedTimeframe(event.target.value)}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-[#0b1220] dark:text-slate-100"
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-primary dark:border-slate-700 dark:bg-[#0b1220] dark:text-slate-100"
               >
                 {timeframes.map((timeframe) => (
                   <option key={timeframe.id} value={timeframe.id}>
@@ -269,7 +269,7 @@ function PhaseStrength({ indices = [], analysis = {}, loading, error }) {
                 </div>
 
                 <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                  {activeIndex?.name ?? activeCode ?? 'No index'} · {selectedTimeframe}
+                  {activeIndex?.name ?? activeCode ?? 'No index'} Â· {selectedTimeframe}
                 </p>
 
               </div>
@@ -423,26 +423,26 @@ function PhaseStrength({ indices = [], analysis = {}, loading, error }) {
 
                   <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-800">
                     <h5 className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-200">
-                      Momentum — RSI 14
+                      Momentum â€” RSI 14
                     </h5>
                     <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                       {formatValue(momentum?.rsi_14)}
                     </p>
                     <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                      RSI value on a 0–100 scale. Values are displayed without imposing a trading signal.
+                      RSI value on a 0â€“100 scale. Values are displayed without imposing a trading signal.
                     </p>
                   </div>
 
                   <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-800">
                     <h5 className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-200">
-                      Trend Strength — ADX 14
+                      Trend Strength â€” ADX 14
                     </h5>
 
                     <div className="grid grid-cols-3 gap-2">
                       {[
                         { label: 'ADX', value: trend?.adx_14 },
                         { label: '+DI', value: trend?.plus_di_14 },
-                        { label: '−DI', value: trend?.minus_di_14 },
+                        { label: 'âˆ’DI', value: trend?.minus_di_14 },
                       ].map((item) => (
                         <div key={item.label}>
                           <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -460,7 +460,7 @@ function PhaseStrength({ indices = [], analysis = {}, loading, error }) {
 
                 <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-800">
                   <h5 className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-200">
-                    MACD — 12, 26, 9
+                    MACD â€” 12, 26, 9
                   </h5>
 
                   <div className="grid gap-3 sm:grid-cols-3">
@@ -541,7 +541,7 @@ function PhaseStrength({ indices = [], analysis = {}, loading, error }) {
 
                 <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-800">
                   <h5 className="mb-4 text-sm font-semibold text-slate-800 dark:text-slate-200">
-                    Bollinger Bands — 20,2
+                    Bollinger Bands â€” 20,2
                   </h5>
 
                   <div className="grid gap-3 sm:grid-cols-3">
